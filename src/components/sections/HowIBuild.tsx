@@ -1,42 +1,40 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { buildProcessSteps } from "@/lib/data";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { FadeInView } from "@/components/animations/FadeInView";
+import { useSectionVisibility } from "@/components/providers/SmoothScrollProvider";
 import {
   CheckCircle,
   FileCode,
   ArrowRight,
-  Sparkles,
   Workflow,
 } from "lucide-react";
 
 export const HowIBuild: React.FC = () => {
   const [activeStepIndex, setActiveStepIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
+  const { ref: sectionRef, isInView } = useSectionVisibility<HTMLElement>();
+
+  /**
+   * Auto-switch process phases only when section is visible/near viewport.
+   */
   useEffect(() => {
-    if (isPaused) return;
+    if (isPaused || !isInView) return;
 
-    timerRef.current = setInterval(() => {
+    const interval = setInterval(() => {
       setActiveStepIndex((prev) => (prev + 1) % buildProcessSteps.length);
     }, 5000);
 
     return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
+      clearInterval(interval);
     };
-  }, [isPaused]);
+  }, [isPaused, isInView, activeStepIndex, buildProcessSteps]);
 
   const handleStepSelect = (idx: number) => {
     setActiveStepIndex(idx);
-    if (timerRef.current) clearInterval(timerRef.current);
-    if (!isPaused) {
-      timerRef.current = setInterval(() => {
-        setActiveStepIndex((prev) => (prev + 1) % buildProcessSteps.length);
-      }, 5000);
-    }
   };
 
   const activeStep = buildProcessSteps[activeStepIndex];
@@ -44,6 +42,7 @@ export const HowIBuild: React.FC = () => {
   return (
     <section
       id="how-i-build"
+      ref={sectionRef}
       className="py-20 md:py-28 bg-[#F4FAFF] relative overflow-hidden border-t border-[#E5EDF7]"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
@@ -66,8 +65,10 @@ export const HowIBuild: React.FC = () => {
         >
           {buildProcessSteps.map((step, idx) => {
             const isActive = activeStepIndex === idx;
+
             return (
               <button
+                type="button"
                 key={step.step}
                 role="tab"
                 id={`how-i-build-tab-${step.step}`}
@@ -87,6 +88,7 @@ export const HowIBuild: React.FC = () => {
                 >
                   PHASE {step.step}
                 </span>
+
                 <span
                   className={`text-[11px] sm:text-xs font-bold block leading-snug 2xl:whitespace-nowrap ${
                     isActive ? "text-white" : "text-[#0A1235]"
@@ -120,9 +122,11 @@ export const HowIBuild: React.FC = () => {
                 <h3 className="text-2xl sm:text-3xl font-bold text-[#0A1235] tracking-tight mb-2">
                   Phase {activeStep.step} — {activeStep.title}
                 </h3>
+
                 <p className="text-sm font-semibold text-[#1677FF] mb-4">
                   {activeStep.subtitle}
                 </p>
+
                 <p className="text-sm md:text-base text-[#5D6C87] leading-relaxed mb-6">
                   {activeStep.description}
                 </p>
@@ -131,6 +135,7 @@ export const HowIBuild: React.FC = () => {
                 <h4 className="text-xs font-mono uppercase tracking-wider font-bold text-[#0A1235] mb-3">
                   Engineering Activities:
                 </h4>
+
                 <div className="space-y-2.5">
                   {activeStep.details.map((detail, dIdx) => (
                     <div
@@ -169,9 +174,10 @@ export const HowIBuild: React.FC = () => {
                   </span>
 
                   <button
+                    type="button"
                     onClick={() =>
                       setActiveStepIndex(
-                        (activeStepIndex + 1) % buildProcessSteps.length,
+                        (activeStepIndex + 1) % buildProcessSteps.length
                       )
                     }
                     className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#1677FF] hover:underline cursor-pointer"

@@ -1,356 +1,421 @@
 import React from "react";
-import { cn } from "@/lib/utils";
 
-interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement> {
-  className?: string;
-  variant?: "default" | "dark";
+function cx(...classes: Array<string | false | null | undefined>) {
+  return classes.filter(Boolean).join(" ");
 }
 
-export const Skeleton: React.FC<SkeletonProps> = ({
+const lightBase = "animate-shimmer rounded-lg bg-[#E7EFF8]";
+const darkBase = "animate-shimmer rounded-lg bg-white/10";
+
+export const Skeleton: React.FC<{ className?: string }> = ({ className }) => {
+  return <div className={cx(lightBase, className)} />;
+};
+
+export const SkeletonDark: React.FC<{ className?: string }> = ({
   className,
-  variant = "default",
-  ...props
 }) => {
-  return (
-    <div
-      className={cn(
-        "rounded-md animate-shimmer relative overflow-hidden",
-        variant === "dark" ? "bg-white/10" : "bg-[#E5EDF7]/70",
-        className,
-      )}
-      {...props}
-    />
-  );
+  return <div className={cx(darkBase, className)} />;
 };
 
 export const SkeletonText: React.FC<{
   lines?: number;
   className?: string;
-  variant?: "default" | "dark";
-}> = ({ lines = 3, className, variant = "default" }) => {
+  lineClassName?: string;
+  darkMode?: boolean;
+}> = ({ lines = 3, className, lineClassName, darkMode = false }) => {
+  const Component = darkMode ? SkeletonDark : Skeleton;
+
   return (
-    <div className={cn("space-y-2.5", className)}>
-      {Array.from({ length: lines }).map((_, i) => (
-        <Skeleton
-          key={i}
-          variant={variant}
-          className={cn("h-3.5", i === lines - 1 ? "w-4/5" : "w-full")}
+    <div className={cx("space-y-2.5", className)}>
+      {Array.from({ length: lines }, (_, index) => (
+        <Component
+          key={index}
+          className={cx(
+            "h-3.5",
+            index === lines - 1 ? "w-2/3" : "w-full",
+            lineClassName
+          )}
         />
       ))}
     </div>
   );
 };
 
-export const SkeletonAvatar: React.FC<{
-  size?: "sm" | "md" | "lg";
-  className?: string;
-  variant?: "default" | "dark";
-}> = ({ size = "md", className, variant = "default" }) => {
-  const sizeClasses = {
-    sm: "w-8 h-8",
-    md: "w-10 h-10",
-    lg: "w-14 h-14",
-  };
-
+export const SkeletonImage: React.FC<{ className?: string }> = ({
+  className,
+}) => {
   return (
-    <Skeleton
-      variant={variant}
-      className={cn("rounded-full shrink-0", sizeClasses[size], className)}
-    />
+    <Skeleton className={cx("aspect-video w-full rounded-xl", className)} />
   );
 };
 
-export const SkeletonImage: React.FC<{
-  aspectRatio?: string;
-  className?: string;
-  variant?: "default" | "dark";
-}> = ({ aspectRatio = "aspect-video", className, variant = "default" }) => {
-  return (
-    <Skeleton
-      variant={variant}
-      className={cn("w-full rounded-xl", aspectRatio, className)}
-    />
-  );
+export const SkeletonButton: React.FC<{ className?: string }> = ({
+  className,
+}) => {
+  return <Skeleton className={cx("h-10 w-36 rounded-lg", className)} />;
 };
 
-export const SkeletonButton: React.FC<{
-  className?: string;
-  variant?: "default" | "dark";
-}> = ({ className, variant = "default" }) => {
-  return (
-    <Skeleton
-      variant={variant}
-      className={cn("h-10 w-28 rounded-lg", className)}
-    />
-  );
-};
+export const SectionHeaderSkeleton: React.FC<{ darkMode?: boolean }> = ({
+  darkMode = false,
+}) => {
+  const Component = darkMode ? SkeletonDark : Skeleton;
 
-export const SkeletonCard: React.FC<{
-  className?: string;
-  variant?: "default" | "dark";
-}> = ({ className, variant = "default" }) => {
   return (
-    <div
-      className={cn(
-        "rounded-2xl border p-6 space-y-4",
-        variant === "dark"
-          ? "bg-[#080E38] border-white/10"
-          : "bg-white border-[#E5EDF7]",
-        className,
-      )}
-    >
-      <div className="flex items-center gap-3">
-        <Skeleton variant={variant} className="w-10 h-10 rounded-xl" />
-        <div className="space-y-1.5 flex-1">
-          <Skeleton variant={variant} className="h-4 w-1/3" />
-          <Skeleton variant={variant} className="h-3 w-1/2" />
-        </div>
-      </div>
-      <SkeletonText variant={variant} lines={3} />
-      <div className="flex gap-2 pt-2">
-        <Skeleton variant={variant} className="h-6 w-16 rounded-md" />
-        <Skeleton variant={variant} className="h-6 w-20 rounded-md" />
-        <Skeleton variant={variant} className="h-6 w-14 rounded-md" />
-      </div>
+    <div className="mx-auto mb-12 max-w-3xl text-center">
+      <Component className="mx-auto mb-4 h-6 w-40 rounded-full" />
+      <Component className="mx-auto mb-3 h-10 w-4/5 max-w-xl md:h-12" />
+      <Component className="mx-auto h-4 w-full max-w-2xl" />
     </div>
   );
 };
 
-export const SkeletonProjectCard: React.FC<{
-  variant?: "default" | "dark";
-  className?: string;
-}> = ({ variant = "default", className }) => {
-  return (
-    <div
-      className={cn(
-        "rounded-2xl border p-6 md:p-8 space-y-5 transition-all duration-300",
-        variant === "dark"
-          ? "bg-[#080E38] border-white/10 text-white"
-          : "bg-white border-[#E5EDF7]",
-        className,
-      )}
-    >
-      {/* Header Row: Badges & Title */}
-      <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
-        <div className="space-y-2 flex-1">
-          <div className="flex gap-2">
-            <Skeleton variant={variant} className="h-5 w-20 rounded-full" />
-            <Skeleton variant={variant} className="h-5 w-28 rounded-full" />
-          </div>
-          <Skeleton variant={variant} className="h-8 w-2/3 rounded-lg" />
-          <Skeleton variant={variant} className="h-4 w-1/2 rounded" />
-        </div>
-        <div className="flex gap-2">
-          <Skeleton variant={variant} className="w-9 h-9 rounded-lg" />
-          <Skeleton variant={variant} className="w-9 h-9 rounded-lg" />
-        </div>
-      </div>
-
-      {/* Description */}
-      <SkeletonText variant={variant} lines={2} />
-
-      {/* Tech Stack Pills */}
-      <div className="flex flex-wrap gap-1.5 pt-1">
-        <Skeleton variant={variant} className="h-6 w-16 rounded-md" />
-        <Skeleton variant={variant} className="h-6 w-20 rounded-md" />
-        <Skeleton variant={variant} className="h-6 w-24 rounded-md" />
-        <Skeleton variant={variant} className="h-6 w-16 rounded-md" />
-        <Skeleton variant={variant} className="h-6 w-18 rounded-md" />
-      </div>
-
-      {/* Problem vs Solution Split */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div
-          className={cn(
-            "p-4 rounded-xl border space-y-2",
-            variant === "dark"
-              ? "bg-[#050A35]/80 border-white/10"
-              : "bg-[#F4FAFF] border-[#E5EDF7]",
-          )}
-        >
-          <Skeleton variant={variant} className="h-3.5 w-28 rounded" />
-          <SkeletonText variant={variant} lines={2} />
-        </div>
-        <div
-          className={cn(
-            "p-4 rounded-xl border space-y-2",
-            variant === "dark"
-              ? "bg-[#050A35]/80 border-white/10"
-              : "bg-[#F4FAFF] border-[#E5EDF7]",
-          )}
-        >
-          <Skeleton variant={variant} className="h-3.5 w-32 rounded" />
-          <SkeletonText variant={variant} lines={2} />
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export const SkeletonCaseStudy: React.FC<{ className?: string }> = ({
+export const SkeletonCard: React.FC<{ className?: string }> = ({
   className,
 }) => {
   return (
     <div
-      className={cn(
-        "rounded-2xl bg-[#F4FAFF] border border-[#E5EDF7] p-6 sm:p-8 md:p-10 shadow-po-md space-y-6",
-        className,
+      className={cx(
+        "rounded-2xl border border-[#E5EDF7] bg-white p-6 shadow-sm",
+        className
       )}
     >
-      <div className="space-y-3 pb-6 border-b border-[#E5EDF7]">
+      <SkeletonImage className="mb-5" />
+
+      <Skeleton className="mb-2 h-6 w-3/4" />
+
+      <SkeletonText lines={3} className="mb-4" />
+
+      <div className="mb-5 flex flex-wrap gap-2">
+        {Array.from({ length: 4 }, (_, index) => (
+          <Skeleton key={index} className="h-6 w-20 rounded-md" />
+        ))}
+      </div>
+
+      <SkeletonButton />
+    </div>
+  );
+};
+
+export const SkeletonProjectCard: React.FC = () => {
+  return (
+    <div className="rounded-2xl border border-[#E5EDF7] bg-white p-6 shadow-sm md:p-8">
+      <div className="mb-4 flex flex-col justify-between gap-4 md:flex-row md:items-start">
+        <div className="w-full space-y-3">
+          <div className="flex flex-wrap gap-2">
+            <Skeleton className="h-5 w-32 rounded-full" />
+            <Skeleton className="h-5 w-36 rounded-full" />
+            <Skeleton className="h-5 w-24 rounded-full" />
+          </div>
+
+          <Skeleton className="h-8 w-3/4 max-w-xl" />
+          <Skeleton className="h-4 w-44" />
+        </div>
+
         <div className="flex gap-2">
-          <Skeleton className="h-5 w-28 rounded" />
-          <Skeleton className="h-5 w-44 rounded" />
-        </div>
-        <Skeleton className="h-8 w-3/4 rounded-lg" />
-        <Skeleton className="h-4 w-1/2 rounded" />
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="p-5 rounded-xl bg-white border border-[#E5EDF7] space-y-2">
-          <Skeleton className="h-4 w-36 rounded" />
-          <SkeletonText lines={3} />
-        </div>
-        <div className="p-5 rounded-xl bg-white border border-[#E5EDF7] space-y-2">
-          <Skeleton className="h-4 w-36 rounded" />
-          <SkeletonText lines={3} />
+          <Skeleton className="h-9 w-9 rounded-lg" />
+          <Skeleton className="h-9 w-9 rounded-lg" />
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <div className="lg:col-span-6 p-6 rounded-xl bg-white border border-[#E5EDF7] space-y-3">
-          <Skeleton className="h-4 w-44 rounded" />
+      <Skeleton className="mb-2 h-4 w-full max-w-3xl" />
+      <Skeleton className="mb-6 h-4 w-5/6 max-w-2xl" />
+
+      <div className="mb-6 flex flex-wrap gap-2">
+        {Array.from({ length: 6 }, (_, index) => (
+          <Skeleton key={index} className="h-6 w-24 rounded-md" />
+        ))}
+      </div>
+
+      <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div className="rounded-xl border border-[#E5EDF7] bg-[#F4FAFF] p-4">
+          <Skeleton className="mb-3 h-3.5 w-32" />
           <SkeletonText lines={3} />
         </div>
-        <div className="lg:col-span-6 p-6 rounded-xl bg-white border border-[#E5EDF7] space-y-3">
-          <Skeleton className="h-4 w-48 rounded" />
+
+        <div className="rounded-xl border border-[#E5EDF7] bg-[#F4FAFF] p-4">
+          <Skeleton className="mb-3 h-3.5 w-40" />
           <SkeletonText lines={3} />
+        </div>
+      </div>
+
+      <Skeleton className="h-4 w-72 max-w-full" />
+    </div>
+  );
+};
+
+export const SkeletonCaseStudy: React.FC = () => {
+  return (
+    <div className="space-y-10">
+      <div className="flex flex-col justify-center gap-3 sm:flex-row">
+        {Array.from({ length: 3 }, (_, index) => (
+          <Skeleton
+            key={index}
+            className="h-[84px] w-full rounded-xl sm:w-64"
+          />
+        ))}
+      </div>
+
+      <div className="rounded-2xl border border-[#E5EDF7] bg-[#F4FAFF] p-6 shadow-sm sm:p-8 md:p-10">
+        <div className="mb-8 border-b border-[#E5EDF7] pb-6">
+          <div className="mb-3 flex flex-wrap gap-2">
+            <Skeleton className="h-6 w-32 rounded" />
+            <Skeleton className="h-6 w-44 rounded" />
+          </div>
+
+          <Skeleton className="mb-2 h-9 w-4/5 max-w-2xl" />
+          <Skeleton className="h-4 w-64 max-w-full" />
+        </div>
+
+        <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2">
+          <div className="rounded-xl border border-[#E5EDF7] bg-white p-5">
+            <Skeleton className="mb-3 h-4 w-48" />
+            <SkeletonText lines={4} />
+          </div>
+
+          <div className="rounded-xl border border-[#E5EDF7] bg-white p-5">
+            <Skeleton className="mb-3 h-4 w-48" />
+            <SkeletonText lines={4} />
+          </div>
+        </div>
+
+        <div className="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <div className="rounded-xl border border-[#E5EDF7] bg-white p-6">
+            <Skeleton className="mb-4 h-4 w-56" />
+
+            <div className="space-y-3">
+              {Array.from({ length: 4 }, (_, index) => (
+                <Skeleton key={index} className="h-4 w-full" />
+              ))}
+            </div>
+          </div>
+
+          <div className="rounded-xl border border-[#E5EDF7] bg-white p-6">
+            <Skeleton className="mb-4 h-4 w-64" />
+
+            <div className="space-y-3">
+              {Array.from({ length: 4 }, (_, index) => (
+                <Skeleton key={index} className="h-4 w-full" />
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="rounded-xl bg-gradient-to-br from-[#050A35] to-[#0B1554] p-6">
+          <SkeletonDark className="mb-4 h-4 w-64" />
+
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            {Array.from({ length: 3 }, (_, index) => (
+              <SkeletonDark key={index} className="h-20 rounded-lg" />
+            ))}
+          </div>
+
+          <div className="mt-6 flex flex-wrap gap-2 border-t border-white/10 pt-4">
+            {Array.from({ length: 5 }, (_, index) => (
+              <SkeletonDark key={index} className="h-6 w-20 rounded" />
+            ))}
+          </div>
         </div>
       </div>
     </div>
   );
 };
 
-export const SkeletonAILab: React.FC<{ className?: string }> = ({
-  className,
-}) => {
+export const SkeletonAILab: React.FC = () => {
+  return (
+    <div className="space-y-10">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {Array.from({ length: 4 }, (_, index) => (
+          <div
+            key={index}
+            className="rounded-xl border border-white/10 bg-[#080E38]/80 p-5"
+          >
+            <SkeletonDark className="mb-3 h-5 w-24 rounded" />
+            <SkeletonDark className="mb-2 h-4 w-full" />
+            <SkeletonDark className="h-3 w-4/5" />
+          </div>
+        ))}
+      </div>
+
+      <div className="rounded-2xl border border-[rgba(0,207,255,0.25)] bg-[#080E38] p-6 sm:p-8 md:p-10">
+        <div className="flex flex-col justify-between gap-4 border-b border-white/10 pb-6 lg:flex-row lg:items-center">
+          <div className="space-y-3">
+            <SkeletonDark className="h-5 w-40 rounded" />
+            <SkeletonDark className="h-8 w-72 max-w-full" />
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            {Array.from({ length: 4 }, (_, index) => (
+              <SkeletonDark key={index} className="h-7 w-24 rounded" />
+            ))}
+          </div>
+        </div>
+
+        <SkeletonDark className="my-6 h-4 w-full max-w-3xl" />
+
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+          <div className="rounded-xl border border-white/10 bg-[#050A35] p-5">
+            <SkeletonDark className="mb-4 h-4 w-64" />
+
+            <div className="space-y-2">
+              {Array.from({ length: 5 }, (_, index) => (
+                <SkeletonDark
+                  key={index}
+                  className="h-10 w-full rounded-lg"
+                />
+              ))}
+            </div>
+          </div>
+
+          <div className="rounded-xl border border-white/10 bg-[#050A35] p-5">
+            <SkeletonDark className="mb-4 h-4 w-64" />
+
+            <div className="space-y-3">
+              {Array.from({ length: 5 }, (_, index) => (
+                <SkeletonDark key={index} className="h-4 w-full" />
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export const PageSkeleton: React.FC = () => {
   return (
     <div
-      className={cn(
-        "p-6 sm:p-8 md:p-10 rounded-2xl bg-[#080E38] border border-[rgba(0,207,255,0.25)] shadow-2xl space-y-6",
-        className,
-      )}
+      aria-busy="true"
+      className="min-h-screen bg-white pt-24 md:pt-28"
     >
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-6 border-b border-white/10">
-        <div className="space-y-2 flex-1">
-          <Skeleton variant="dark" className="h-5 w-36 rounded" />
-          <Skeleton variant="dark" className="h-8 w-2/3 rounded-lg" />
-        </div>
-        <div className="flex gap-2">
-          <Skeleton variant="dark" className="h-6 w-16 rounded" />
-          <Skeleton variant="dark" className="h-6 w-20 rounded" />
-        </div>
-      </div>
+      {/* Hero skeleton */}
+      <section className="py-20 md:py-28">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:items-center">
+            <div className="space-y-5">
+              <Skeleton className="h-6 w-44 rounded-full" />
+              <Skeleton className="h-12 w-full max-w-xl md:h-14" />
+              <Skeleton className="h-12 w-4/5 max-w-lg md:h-14" />
+              <SkeletonText lines={3} className="max-w-xl" />
 
-      <SkeletonText variant="dark" lines={2} />
+              <div className="flex flex-wrap gap-3 pt-2">
+                <SkeletonButton />
+                <SkeletonButton className="w-28" />
+              </div>
+            </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        <div className="lg:col-span-6 p-5 rounded-xl bg-[#050A35] border border-white/10 space-y-3">
-          <Skeleton variant="dark" className="h-4 w-44 rounded" />
-          <Skeleton variant="dark" className="h-10 w-full rounded-lg" />
-          <Skeleton variant="dark" className="h-10 w-full rounded-lg" />
-          <Skeleton variant="dark" className="h-10 w-full rounded-lg" />
+            <SkeletonImage className="aspect-[4/3] w-full rounded-3xl" />
+          </div>
         </div>
-        <div className="lg:col-span-6 p-5 rounded-xl bg-[#050A35] border border-white/10 space-y-3">
-          <Skeleton variant="dark" className="h-4 w-40 rounded" />
-          <SkeletonText variant="dark" lines={3} />
+      </section>
+
+      {/* Projects skeleton */}
+      <section className="py-20 md:py-28">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <SectionHeaderSkeleton />
+
+          <div className="mb-12 flex flex-wrap items-center justify-center gap-2">
+            {Array.from({ length: 4 }, (_, index) => (
+              <Skeleton key={index} className="h-9 w-32 rounded-full" />
+            ))}
+          </div>
+
+          <div className="space-y-8">
+            <SkeletonProjectCard />
+            <SkeletonProjectCard />
+          </div>
         </div>
-      </div>
+      </section>
+
+      {/* How I Build skeleton */}
+      <section className="border-t border-[#E5EDF7] bg-[#F4FAFF] py-20 md:py-28">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <SectionHeaderSkeleton />
+
+          <div className="mb-8 grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-7">
+            {Array.from({ length: 7 }, (_, index) => (
+              <Skeleton key={index} className="h-[74px] rounded-xl" />
+            ))}
+          </div>
+
+          <div className="rounded-2xl border border-[#E5EDF7] bg-white p-6 sm:p-8 md:p-10">
+            <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
+              <div className="lg:col-span-7">
+                <Skeleton className="mb-3 h-6 w-56 rounded-full" />
+                <Skeleton className="mb-2 h-8 w-3/4 max-w-xl" />
+                <Skeleton className="mb-4 h-4 w-44" />
+                <SkeletonText lines={4} className="mb-6" />
+
+                <div className="space-y-3">
+                  {Array.from({ length: 5 }, (_, index) => (
+                    <Skeleton key={index} className="h-4 w-full" />
+                  ))}
+                </div>
+              </div>
+
+              <div className="lg:col-span-5">
+                <div className="rounded-xl border border-[#E5EDF7] bg-[#F4FAFF] p-6">
+                  <Skeleton className="mb-4 h-4 w-56" />
+
+                  <div className="space-y-2">
+                    {Array.from({ length: 4 }, (_, index) => (
+                      <Skeleton
+                        key={index}
+                        className="h-10 w-full rounded-lg"
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* AI Lab skeleton */}
+      <section className="bg-[#050A35] py-20 md:py-28">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <SectionHeaderSkeleton darkMode />
+          <SkeletonAILab />
+        </div>
+      </section>
+
+      {/* Case Studies skeleton */}
+      <section className="py-20 md:py-28">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <SectionHeaderSkeleton />
+          <SkeletonCaseStudy />
+        </div>
+      </section>
+
+      {/* Contact skeleton */}
+      <section className="py-20 md:py-28">
+        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+          <SectionHeaderSkeleton />
+
+          <div className="rounded-2xl border border-[#E5EDF7] bg-white p-6 md:p-10">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-24" />
+                <Skeleton className="h-11 w-full rounded-lg" />
+              </div>
+
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-24" />
+                <Skeleton className="h-11 w-full rounded-lg" />
+              </div>
+            </div>
+
+            <div className="mt-6 space-y-2">
+              <Skeleton className="h-4 w-24" />
+              <Skeleton className="h-32 w-full rounded-lg" />
+            </div>
+
+            <SkeletonButton className="mt-6" />
+          </div>
+        </div>
+      </section>
     </div>
   );
 };
 
-export const SkeletonSectionHeader: React.FC<{
-  className?: string;
-  variant?: "default" | "dark";
-}> = ({ className, variant = "default" }) => {
-  return (
-    <div
-      className={cn("text-center max-w-3xl mx-auto mb-16 space-y-4", className)}
-    >
-      <div className="flex justify-center">
-        <Skeleton variant={variant} className="h-6 w-36 rounded-full" />
-      </div>
-      <div className="space-y-2 flex flex-col items-center">
-        <Skeleton
-          variant={variant}
-          className="h-9 sm:h-11 w-3/4 sm:w-2/3 rounded-lg"
-        />
-      </div>
-      <div className="flex justify-center">
-        <Skeleton variant={variant} className="h-4 w-5/6 sm:w-4/5 rounded" />
-      </div>
-    </div>
-  );
-};
-
-export const SkeletonNavbar: React.FC = () => {
-  return (
-    <header className="fixed top-0 left-0 right-0 z-50 py-4 bg-white/90 backdrop-blur-md border-b border-[#E5EDF7]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
-        <Skeleton className="h-9 w-28 rounded-lg" />
-        <div className="hidden xl:flex items-center gap-2 bg-[#F4FAFF] border border-[#E5EDF7] px-4 py-2 rounded-full">
-          <Skeleton className="h-4 w-12 rounded-full" />
-          <Skeleton className="h-4 w-14 rounded-full" />
-          <Skeleton className="h-4 w-16 rounded-full" />
-          <Skeleton className="h-4 w-12 rounded-full" />
-          <Skeleton className="h-4 w-20 rounded-full" />
-        </div>
-        <div className="flex items-center gap-3">
-          <Skeleton className="h-9 w-24 rounded-lg hidden sm:block" />
-          <Skeleton className="h-9 w-28 rounded-lg" />
-        </div>
-      </div>
-    </header>
-  );
-};
-
-export const SkeletonHero: React.FC = () => {
-  return (
-    <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden bg-gradient-to-b from-[#F4FAFF] via-white to-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="text-center max-w-4xl mx-auto mb-14 space-y-6">
-          <div className="flex justify-center">
-            <Skeleton className="h-7 w-72 rounded-full" />
-          </div>
-          <div className="space-y-3 flex flex-col items-center">
-            <Skeleton className="h-10 sm:h-14 md:h-16 w-11/12 rounded-xl" />
-            <Skeleton className="h-10 sm:h-14 md:h-16 w-3/4 rounded-xl" />
-          </div>
-          <div className="flex flex-col items-center gap-2 pt-2">
-            <Skeleton className="h-4 sm:h-5 w-4/5 max-w-2xl rounded" />
-            <Skeleton className="h-4 sm:h-5 w-3/5 max-w-xl rounded" />
-          </div>
-          <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
-            <Skeleton className="h-12 w-36 rounded-xl" />
-            <Skeleton className="h-12 w-36 rounded-xl" />
-          </div>
-        </div>
-
-        {/* Console / Pipeline Card */}
-        <div className="w-full max-w-5xl mx-auto rounded-2xl bg-[#050A35] border border-[rgba(0,207,255,0.25)] p-5 md:p-8 space-y-6 shadow-2xl">
-          <div className="flex items-center justify-between pb-6 border-b border-white/10">
-            <Skeleton variant="dark" className="h-6 w-48 rounded" />
-            <Skeleton variant="dark" className="h-6 w-24 rounded" />
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <Skeleton variant="dark" className="h-20 rounded-xl" />
-            <Skeleton variant="dark" className="h-20 rounded-xl" />
-            <Skeleton variant="dark" className="h-20 rounded-xl" />
-            <Skeleton variant="dark" className="h-20 rounded-xl" />
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-};
+export default Skeleton;

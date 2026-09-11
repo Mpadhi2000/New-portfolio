@@ -9,6 +9,7 @@ import { CaseStudies } from "@/components/sections/CaseStudies";
 import { Achievements } from "@/components/sections/Achievements";
 import { Resume } from "@/components/sections/Resume";
 import { Contact } from "@/components/sections/Contact";
+import { BackToTop } from "@/components/ui/BackToTop";
 
 export default function Home() {
   return (
@@ -24,6 +25,7 @@ export default function Home() {
       <Achievements />
       <Resume />
       <Contact />
+      <BackToTop />
     </>
   );
 }

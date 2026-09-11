@@ -1,28 +1,26 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { aiLabProjects } from "@/lib/data";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { FadeInView } from "@/components/animations/FadeInView";
-import {
-  Bot,
-  Cpu,
-  Sparkles,
-  ArrowRight,
-  ShieldCheck,
-  CheckCircle2,
-  Terminal,
-} from "lucide-react";
+import { useSectionVisibility } from "@/components/providers/SmoothScrollProvider";
+import { ShieldCheck, CheckCircle2, Terminal } from "lucide-react";
 
 export const AILab: React.FC = () => {
   const [selectedAIId, setSelectedAIId] = useState<string>("ai-gateway");
   const [isPaused, setIsPaused] = useState(false);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
+  const { ref: sectionRef, isInView } = useSectionVisibility<HTMLElement>();
+
+  /**
+   * Auto-switch AI Lab tabs only when section is visible/near viewport.
+   * This prevents offscreen content height changes from moving the page.
+   */
   useEffect(() => {
-    if (isPaused) return;
+    if (isPaused || !isInView) return;
 
-    timerRef.current = setInterval(() => {
+    const interval = setInterval(() => {
       setSelectedAIId((prev) => {
         const currentIndex = aiLabProjects.findIndex((p) => p.id === prev);
         const nextIndex = (currentIndex + 1) % aiLabProjects.length;
@@ -31,23 +29,13 @@ export const AILab: React.FC = () => {
     }, 5500);
 
     return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
+      clearInterval(interval);
     };
-  }, [isPaused]);
+  }, [isPaused, isInView, selectedAIId, aiLabProjects]);
 
   const handleSelect = (id: string) => {
     if (id === selectedAIId) return;
     setSelectedAIId(id);
-    if (timerRef.current) clearInterval(timerRef.current);
-    if (!isPaused) {
-      timerRef.current = setInterval(() => {
-        setSelectedAIId((prev) => {
-          const currentIndex = aiLabProjects.findIndex((p) => p.id === prev);
-          const nextIndex = (currentIndex + 1) % aiLabProjects.length;
-          return aiLabProjects[nextIndex].id;
-        });
-      }, 5500);
-    }
   };
 
   const selectedProject =
@@ -56,6 +44,7 @@ export const AILab: React.FC = () => {
   return (
     <section
       id="ai-lab"
+      ref={sectionRef}
       className="py-20 md:py-28 bg-[#050A35] text-white relative overflow-hidden"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
@@ -82,8 +71,10 @@ export const AILab: React.FC = () => {
         >
           {aiLabProjects.map((item) => {
             const isSelected = selectedAIId === item.id;
+
             return (
               <button
+                type="button"
                 key={item.id}
                 role="tab"
                 id={`ai-tab-${item.id}`}
@@ -130,10 +121,12 @@ export const AILab: React.FC = () => {
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <span className="w-2 h-2 rounded-full bg-[#00CFFF] animate-pulse" />
+
                   <span className="text-xs font-mono font-semibold px-2.5 py-0.5 rounded bg-[#1677ff] text-[#ffffff] border border-[#1677ff] shadow-sm">
                     {selectedProject.badge.toUpperCase()} ARCHITECTURE
                   </span>
                 </div>
+
                 <h3 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
                   {selectedProject.title}
                 </h3>
@@ -173,6 +166,7 @@ export const AILab: React.FC = () => {
                       <span className="w-5 h-5 rounded bg-[#1677FF]/30 text-[#00CFFF] flex items-center justify-center font-bold text-[11px] shrink-0">
                         {idx + 1}
                       </span>
+
                       <span>{step}</span>
                     </div>
                   ))}

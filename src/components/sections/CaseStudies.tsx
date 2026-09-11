@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { caseStudies } from "@/lib/data";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { FadeInView } from "@/components/animations/FadeInView";
+import { useSectionVisibility } from "@/components/providers/SmoothScrollProvider";
 import {
   Layers,
   Cpu,
@@ -14,15 +15,20 @@ import {
 
 export const CaseStudies: React.FC = () => {
   const [activeCaseStudyId, setActiveCaseStudyId] = useState<string>(
-    "saas-frontend-architecture",
+    "saas-frontend-architecture"
   );
+
   const [isPaused, setIsPaused] = useState(false);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
+  const { ref: sectionRef, isInView } = useSectionVisibility<HTMLElement>();
+
+  /**
+   * Auto-switch case studies only when section is visible/near viewport.
+   */
   useEffect(() => {
-    if (isPaused) return;
+    if (isPaused || !isInView) return;
 
-    timerRef.current = setInterval(() => {
+    const interval = setInterval(() => {
       setActiveCaseStudyId((prev) => {
         const currentIndex = caseStudies.findIndex((c) => c.id === prev);
         const nextIndex = (currentIndex + 1) % caseStudies.length;
@@ -31,28 +37,19 @@ export const CaseStudies: React.FC = () => {
     }, 6000);
 
     return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
+      clearInterval(interval);
     };
-  }, [isPaused]);
+  }, [isPaused, isInView, activeCaseStudyId, caseStudies]);
 
   const handleStudySelect = (id: string) => {
     if (id === activeCaseStudyId) return;
     setActiveCaseStudyId(id);
-    if (timerRef.current) clearInterval(timerRef.current);
-    if (!isPaused) {
-      timerRef.current = setInterval(() => {
-        setActiveCaseStudyId((prev) => {
-          const currentIndex = caseStudies.findIndex((c) => c.id === prev);
-          const nextIndex = (currentIndex + 1) % caseStudies.length;
-          return caseStudies[nextIndex].id;
-        });
-      }, 6000);
-    }
   };
 
   return (
     <section
       id="case-studies"
+      ref={sectionRef}
       className="py-20 md:py-28 bg-white relative overflow-hidden"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
@@ -73,8 +70,10 @@ export const CaseStudies: React.FC = () => {
         >
           {caseStudies.map((study) => {
             const isActive = activeCaseStudyId === study.id;
+
             return (
               <button
+                type="button"
                 key={study.id}
                 role="tab"
                 id={`case-study-tab-${study.id}`}
@@ -98,6 +97,7 @@ export const CaseStudies: React.FC = () => {
                     CASE STUDY {study.number}
                   </span>
                 </div>
+
                 <h3 className="text-xs font-bold leading-snug line-clamp-2">
                   {study.title}
                 </h3>
@@ -124,6 +124,7 @@ export const CaseStudies: React.FC = () => {
                     <span className="text-xs font-mono font-bold text-[#1677FF] bg-[#1677FF]/10 px-2.5 py-1 rounded">
                       CASE STUDY {study.number}
                     </span>
+
                     <span className="text-xs font-mono text-[#5D6C87] bg-white border border-[#E5EDF7] px-2.5 py-1 rounded">
                       Context: {study.context}
                     </span>
@@ -132,6 +133,7 @@ export const CaseStudies: React.FC = () => {
                   <h3 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#0A1235] tracking-tight mb-2">
                     {study.title}
                   </h3>
+
                   <p className="text-sm md:text-base text-[#1677FF] font-medium">
                     {study.tagline}
                   </p>
@@ -144,6 +146,7 @@ export const CaseStudies: React.FC = () => {
                       <AlertCircle className="w-4 h-4" />
                       <span>The Engineering Challenge</span>
                     </div>
+
                     <p className="text-xs sm:text-sm text-[#5D6C87] leading-relaxed">
                       {study.problem}
                     </p>
@@ -154,6 +157,7 @@ export const CaseStudies: React.FC = () => {
                       <Lightbulb className="w-4 h-4" />
                       <span>The Architectural Solution</span>
                     </div>
+
                     <p className="text-xs sm:text-sm text-[#5D6C87] leading-relaxed">
                       {study.solution}
                     </p>
@@ -167,6 +171,7 @@ export const CaseStudies: React.FC = () => {
                       <Layers className="w-4 h-4 text-[#1677FF]" />
                       Architecture Implementation
                     </h4>
+
                     <div className="space-y-3">
                       {study.architectureBreakdown.map((item, idx) => (
                         <div
@@ -185,6 +190,7 @@ export const CaseStudies: React.FC = () => {
                       <Cpu className="w-4 h-4 text-[#1677FF]" />
                       Key Engineering Decisions &amp; Trade-offs
                     </h4>
+
                     <div className="space-y-3">
                       {study.engineeringDecisions.map((decision, idx) => (
                         <div
@@ -204,6 +210,7 @@ export const CaseStudies: React.FC = () => {
                   <h4 className="text-xs font-mono uppercase tracking-wider font-bold text-[#00CFFF] mb-3">
                     Production Outcomes &amp; Key Learnings
                   </h4>
+
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     {study.resultsAndLearnings.map((result, rIdx) => (
                       <div

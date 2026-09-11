@@ -16,12 +16,20 @@ export const Navbar: React.FC = () => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
 
-      // Simple active section detection
-      const sections = navLinks.map((link) => link.href.replace("#", ""));
+      /**
+       * Simple active section detection.
+       * This only updates navbar state.
+       * It does not scroll the page.
+       */
+      const sections = navLinks.map((link) =>
+        link.href.replace("#", "").trim()
+      );
+
       const scrollPosition = window.scrollY + 100;
 
       for (let i = sections.length - 1; i >= 0; i--) {
         const sectionEl = document.getElementById(sections[i]);
+
         if (sectionEl && sectionEl.offsetTop <= scrollPosition) {
           setActiveSection(sections[i]);
           break;
@@ -29,8 +37,11 @@ export const Navbar: React.FC = () => {
       }
     };
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
 
   const closeMobileMenu = () => setMobileMenuOpen(false);
@@ -45,11 +56,11 @@ export const Navbar: React.FC = () => {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between">
-          {/* Brand Logo - Enlarged cleanly without name text */}
+          {/* Brand Logo */}
           <Link
             href="#home"
             className="flex items-center group focus:outline-none focus:ring-2 focus:ring-[#1677FF] rounded-lg p-1"
-            aria-label="Mayank Padhi Home"
+            aria-label={`${personalInfo.name} Home`}
           >
             <div className="h-11 sm:h-12 md:h-13 w-auto aspect-[1024/672] flex items-center justify-center transition-transform group-hover:scale-105">
               <Logo className="h-full w-auto text-[#1677FF] transition-colors group-hover:text-[#0E5FD8]" />
@@ -59,12 +70,13 @@ export const Navbar: React.FC = () => {
           {/* Desktop Navigation */}
           <nav className="hidden xl:flex items-center gap-1 bg-[#F4FAFF]/80 border border-[#E5EDF7] px-3 py-1.5 rounded-full backdrop-blur-sm">
             {navLinks.map((link) => {
-              const sectionId = link.href.replace("#", "");
+              const sectionId = link.href.replace("#", "").trim();
               const isActive = activeSection === sectionId;
+
               return (
                 <Link
-                  key={link.href}
-                  href={link.href}
+                  key={sectionId}
+                  href={`#${sectionId}`}
                   className={`px-3 py-1 rounded-full text-xs font-medium transition-all duration-200 ${
                     isActive
                       ? "bg-[#1677FF] text-white shadow-sm"
@@ -86,6 +98,7 @@ export const Navbar: React.FC = () => {
               <FileText className="w-3.5 h-3.5" />
               <span>Resume</span>
             </a>
+
             <a href="#contact">
               <Button
                 variant="cta"
@@ -105,7 +118,9 @@ export const Navbar: React.FC = () => {
                 Contact
               </Button>
             </a>
+
             <button
+              type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
               className="p-2 rounded-lg text-[#0A1235] hover:bg-[#F4FAFF] border border-[#E5EDF7] transition-colors"
@@ -125,12 +140,13 @@ export const Navbar: React.FC = () => {
         <div className="xl:hidden bg-white/95 backdrop-blur-xl border-b border-[#E5EDF7] px-4 pt-3 pb-6 shadow-xl animate-in slide-in-from-top-4 duration-200">
           <div className="flex flex-col gap-1 max-h-[75vh] overflow-y-auto">
             {navLinks.map((link) => {
-              const sectionId = link.href.replace("#", "");
+              const sectionId = link.href.replace("#", "").trim();
               const isActive = activeSection === sectionId;
+
               return (
                 <Link
-                  key={link.href}
-                  href={link.href}
+                  key={sectionId}
+                  href={`#${sectionId}`}
                   onClick={closeMobileMenu}
                   className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                     isActive
@@ -142,6 +158,7 @@ export const Navbar: React.FC = () => {
                 </Link>
               );
             })}
+
             <div className="pt-3 mt-2 border-t border-[#E5EDF7] flex flex-col gap-2">
               <a
                 href="#resume"
@@ -151,6 +168,7 @@ export const Navbar: React.FC = () => {
                 <FileText className="w-4 h-4" />
                 View Resume
               </a>
+
               <a href="#contact" onClick={closeMobileMenu} className="w-full">
                 <Button
                   variant="cta"

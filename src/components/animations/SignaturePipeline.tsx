@@ -1,7 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Code2,
   Database,
@@ -82,19 +81,42 @@ export const SignaturePipeline: React.FC = () => {
   const [selectedNode, setSelectedNode] = useState<string>("ai");
   const [activePulseIndex, setActivePulseIndex] = useState<number>(3);
   const [isSimulating, setIsSimulating] = useState(false);
-  const shouldReduceMotion = useReducedMotion();
+
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
 
   const handleSimulateFlow = () => {
     if (isSimulating) return;
+
     setIsSimulating(true);
+
     let step = 0;
-    const interval = setInterval(() => {
+
+    intervalRef.current = setInterval(() => {
       setActivePulseIndex(step);
       setSelectedNode(pipelineNodes[step].id);
+
       step++;
+
       if (step >= pipelineNodes.length) {
-        clearInterval(interval);
-        setTimeout(() => {
+        if (intervalRef.current) {
+          clearInterval(intervalRef.current);
+          intervalRef.current = null;
+        }
+
+        timeoutRef.current = setTimeout(() => {
           setIsSimulating(false);
         }, 1000);
       }
@@ -118,12 +140,14 @@ export const SignaturePipeline: React.FC = () => {
             <Activity className="w-3.5 h-3.5 animate-pulse text-[#00CFFF]" />
             <span>SYSTEM ARCHITECTURE PIPELINE</span>
           </div>
+
           <span className="hidden sm:inline text-xs text-[#A9B8D8] font-mono">
             Code → Data/API → System → AI → Product
           </span>
         </div>
 
         <button
+          type="button"
           onClick={handleSimulateFlow}
           disabled={isSimulating}
           className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-[#1677FF] to-[#00CFFF] text-white text-xs font-semibold hover:shadow-[0_0_20px_rgba(0,207,255,0.4)] transition-all disabled:opacity-50 cursor-pointer"
@@ -145,6 +169,7 @@ export const SignaturePipeline: React.FC = () => {
             return (
               <div key={node.id} className="relative flex flex-col h-full">
                 <button
+                  type="button"
                   onClick={() => {
                     setSelectedNode(node.id);
                     setActivePulseIndex(index);
@@ -161,6 +186,7 @@ export const SignaturePipeline: React.FC = () => {
                       <span className="text-[11px] font-mono font-bold text-[#00CFFF]">
                         STEP {node.step}
                       </span>
+
                       <span
                         className={`text-[10px] font-mono px-1.5 py-0.5 rounded border ${
                           isSelected
@@ -183,6 +209,7 @@ export const SignaturePipeline: React.FC = () => {
                       >
                         <Icon className="w-3.5 h-3.5" />
                       </div>
+
                       <h4 className="font-bold text-sm text-white tracking-tight truncate">
                         {node.title}
                       </h4>
@@ -203,6 +230,7 @@ export const SignaturePipeline: React.FC = () => {
                         {t}
                       </span>
                     ))}
+
                     {node.techs.length > 2 && (
                       <span className="text-[10px] font-mono text-[#A9B8D8]">
                         +{node.techs.length - 2}
@@ -230,15 +258,18 @@ export const SignaturePipeline: React.FC = () => {
             <div className="w-8 h-8 rounded-lg bg-[#1677FF]/20 border border-[#1677FF]/40 flex items-center justify-center text-[#00CFFF] shrink-0">
               <CheckCircle2 className="w-4 h-4" />
             </div>
+
             <div>
               <div className="flex items-center gap-2">
                 <span className="font-bold text-sm text-white">
                   {activeNodeData.title} Layer Telemetry
                 </span>
+
                 <span className="text-xs font-mono text-[#00CFFF]">
                   ({activeNodeData.subtitle})
                 </span>
               </div>
+
               <p className="text-xs font-mono text-[#A9B8D8] mt-0.5">
                 {activeNodeData.telemetry}
               </p>

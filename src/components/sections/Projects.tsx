@@ -1,16 +1,15 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { projectsData } from "@/lib/data";
-import { Project, ProjectCategory } from "@/types/portfolio";
+import { ProjectCategory } from "@/types/portfolio";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { Badge } from "@/components/ui/Badge";
-import { Button } from "@/components/ui/Button";
 import { FadeInView } from "@/components/animations/FadeInView";
+import { useSectionVisibility } from "@/components/providers/SmoothScrollProvider";
 import {
   ExternalLink,
   Github,
-  Layers,
   Sparkles,
   ChevronDown,
   ChevronUp,
@@ -35,48 +34,47 @@ const rotatingCategories: ProjectCategory[] = [
 export const Projects: React.FC = () => {
   const [selectedCategory, setSelectedCategory] =
     useState<ProjectCategory>("AI & GenAI");
+
   const [expandedProjectId, setExpandedProjectId] = useState<string | null>(
-    null,
+    null
   );
+
   const [isPaused, setIsPaused] = useState(false);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
+  const { ref: sectionRef, isInView } = useSectionVisibility<HTMLElement>();
+
+  /**
+   * Auto-switch project category only when:
+   * 1. User is not hovering/focusing the section.
+   * 2. Section is near the viewport.
+   * 3. User has not selected "All".
+   *
+   * This preserves automatic tab switching while preventing
+   * offscreen height changes from moving the main page.
+   */
   useEffect(() => {
-    if (isPaused) {
-      if (timerRef.current) clearInterval(timerRef.current);
-      return;
-    }
+    if (isPaused || !isInView || selectedCategory === "All") return;
 
-    timerRef.current = setInterval(() => {
+    const interval = setInterval(() => {
       setSelectedCategory((prev) => {
         const currentIdx = rotatingCategories.indexOf(prev);
         const nextIdx =
-          currentIdx === -1 ? 0 : (currentIdx + 1) % rotatingCategories.length;
+          currentIdx === -1
+            ? 0
+            : (currentIdx + 1) % rotatingCategories.length;
+
         return rotatingCategories[nextIdx];
       });
     }, 5500);
 
     return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
+      clearInterval(interval);
     };
-  }, [isPaused]);
+  }, [isPaused, isInView, selectedCategory, rotatingCategories]);
 
   const handleCategorySelect = (cat: ProjectCategory) => {
     if (cat === selectedCategory) return;
     setSelectedCategory(cat);
-    if (timerRef.current) clearInterval(timerRef.current);
-    if (!isPaused && cat !== "All") {
-      timerRef.current = setInterval(() => {
-        setSelectedCategory((prev) => {
-          const currentIdx = rotatingCategories.indexOf(prev);
-          const nextIdx =
-            currentIdx === -1
-              ? 0
-              : (currentIdx + 1) % rotatingCategories.length;
-          return rotatingCategories[nextIdx];
-        });
-      }, 5500);
-    }
   };
 
   const filteredProjects =
@@ -91,6 +89,7 @@ export const Projects: React.FC = () => {
   return (
     <section
       id="projects"
+      ref={sectionRef}
       className="py-20 md:py-28 bg-white relative overflow-hidden"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
@@ -107,6 +106,7 @@ export const Projects: React.FC = () => {
         <div className="flex flex-wrap items-center justify-center gap-2 mb-12">
           {categories.map((cat) => (
             <button
+              type="button"
               key={cat}
               onClick={() => handleCategorySelect(cat)}
               className={`px-4 py-2 rounded-full text-xs font-mono transition-all duration-200 cursor-pointer ${
@@ -173,6 +173,7 @@ export const Projects: React.FC = () => {
                         >
                           {project.title}
                         </h3>
+
                         <p
                           className={`text-sm font-mono mt-1 ${
                             isAI ? "text-[#00CFFF]" : "text-[#1677FF]"
@@ -259,6 +260,7 @@ export const Projects: React.FC = () => {
                         >
                           Problem &amp; Context
                         </span>
+
                         <p
                           className={`text-xs md:text-sm leading-relaxed ${
                             isAI ? "text-[#A9B8D8]" : "text-[#5D6C87]"
@@ -282,6 +284,7 @@ export const Projects: React.FC = () => {
                         >
                           Architectural Solution
                         </span>
+
                         <p
                           className={`text-xs md:text-sm leading-relaxed ${
                             isAI ? "text-[#A9B8D8]" : "text-[#5D6C87]"
@@ -294,6 +297,7 @@ export const Projects: React.FC = () => {
 
                     {/* Toggle Architecture & Engineering Details */}
                     <button
+                      type="button"
                       onClick={() => toggleExpand(project.id)}
                       className={`inline-flex items-center gap-1.5 text-xs font-mono font-semibold transition-colors cursor-pointer ${
                         isAI
@@ -306,6 +310,7 @@ export const Projects: React.FC = () => {
                           ? "Hide Technical Breakdown"
                           : "Inspect System Architecture & Highlights"}
                       </span>
+
                       {isExpanded ? (
                         <ChevronUp className="w-3.5 h-3.5" />
                       ) : (
@@ -329,6 +334,7 @@ export const Projects: React.FC = () => {
                                   isAI ? "text-[#00CFFF]" : "text-[#1677FF]"
                                 }`}
                               />
+
                               <h4
                                 className={`text-xs font-mono uppercase tracking-wider font-bold ${
                                   isAI ? "text-white" : "text-[#0A1235]"
@@ -351,6 +357,7 @@ export const Projects: React.FC = () => {
                                   <span className="w-4 h-4 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center text-[10px] shrink-0 font-mono">
                                     {aIdx + 1}
                                   </span>
+
                                   <span>{item}</span>
                                 </div>
                               ))}
@@ -365,6 +372,7 @@ export const Projects: React.FC = () => {
                                   isAI ? "text-[#00CFFF]" : "text-[#1677FF]"
                                 }`}
                               />
+
                               <h4
                                 className={`text-xs font-mono uppercase tracking-wider font-bold ${
                                   isAI ? "text-white" : "text-[#0A1235]"
@@ -384,9 +392,12 @@ export const Projects: React.FC = () => {
                                 >
                                   <CheckCircle
                                     className={`w-3.5 h-3.5 mt-0.5 shrink-0 ${
-                                      isAI ? "text-[#00CFFF]" : "text-[#1677FF]"
+                                      isAI
+                                        ? "text-[#00CFFF]"
+                                        : "text-[#1677FF]"
                                     }`}
                                   />
+
                                   <span>{highlight}</span>
                                 </li>
                               ))}

@@ -23,7 +23,10 @@ export const FadeInView: React.FC<FadeInViewProps> = ({
   const shouldReduceMotion = useReducedMotion();
 
   const getDirectionOffset = () => {
-    if (shouldReduceMotion) return { x: 0, y: 0 };
+    if (shouldReduceMotion) {
+      return { x: 0, y: 0 };
+    }
+
     switch (direction) {
       case "up":
         return { x: 0, y: 24 };

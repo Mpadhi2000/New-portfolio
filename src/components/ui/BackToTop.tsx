@@ -2,19 +2,13 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { ArrowUp } from "lucide-react";
-
-type LenisLike = {
-  scrollTo: (
-    target: number | HTMLElement,
-    options?: {
-      duration?: number;
-      offset?: number;
-    }
-  ) => void;
-};
+import { useLenis } from "@/components/providers/SmoothScrollProvider";
 
 export const BackToTop: React.FC = () => {
+  const lenis = useLenis();
+
   const [visible, setVisible] = useState(false);
+
   const progressCircleRef = useRef<SVGCircleElement | null>(null);
   const rafRef = useRef<number | null>(null);
 
@@ -35,6 +29,7 @@ export const BackToTop: React.FC = () => {
 
       const scrollTop = window.scrollY;
       const viewportHeight = window.innerHeight;
+
       const scrollableHeight = Math.max(
         document.documentElement.scrollHeight - viewportHeight,
         0
@@ -49,9 +44,14 @@ export const BackToTop: React.FC = () => {
         circle.style.strokeDashoffset = `${
           CIRCUMFERENCE * (1 - progress)
         }`;
+
         circle.style.opacity = progress <= 0 ? "0" : "1";
       }
 
+      /**
+       * Hide on first fold.
+       * Show only after user scrolls beyond approximately one viewport.
+       */
       const nextVisible = scrollTop > viewportHeight;
 
       setVisible((prev) => (prev === nextVisible ? prev : nextVisible));
@@ -82,11 +82,6 @@ export const BackToTop: React.FC = () => {
     const reduceMotion =
       typeof window !== "undefined" &&
       window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    const lenis =
-      typeof window !== "undefined"
-        ? (window as unknown as { __lenis?: LenisLike }).__lenis
-        : undefined;
 
     if (lenis && typeof lenis.scrollTo === "function") {
       lenis.scrollTo(0, {
@@ -154,7 +149,7 @@ export const BackToTop: React.FC = () => {
           </defs>
         </svg>
 
-        {/* Inner blue button */}
+        {/* Inner blue Back-to-Top button */}
         <button
           type="button"
           onClick={scrollToTop}
