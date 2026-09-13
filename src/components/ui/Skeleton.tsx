@@ -33,7 +33,7 @@ export const SkeletonText: React.FC<{
           className={cx(
             "h-3.5",
             index === lines - 1 ? "w-2/3" : "w-full",
-            lineClassName
+            lineClassName,
           )}
         />
       ))}
@@ -76,7 +76,7 @@ export const SkeletonCard: React.FC<{ className?: string }> = ({
     <div
       className={cx(
         "rounded-2xl border border-[#E5EDF7] bg-white p-6 shadow-sm",
-        className
+        className,
       )}
     >
       <SkeletonImage className="mb-5" />
@@ -258,10 +258,7 @@ export const SkeletonAILab: React.FC = () => {
 
             <div className="space-y-2">
               {Array.from({ length: 5 }, (_, index) => (
-                <SkeletonDark
-                  key={index}
-                  className="h-10 w-full rounded-lg"
-                />
+                <SkeletonDark key={index} className="h-10 w-full rounded-lg" />
               ))}
             </div>
           </div>
@@ -285,30 +282,83 @@ export const PageSkeleton: React.FC = () => {
   return (
     <div
       aria-busy="true"
-      className="min-h-screen bg-white pt-24 md:pt-28"
+      className="min-h-screen bg-white pt-28 pb-20 overflow-hidden"
     >
-      {/* Hero skeleton */}
-      <section className="py-20 md:py-28">
+      {/* Hero section skeleton */}
+      <section className="pt-8 pb-16 md:pt-12 md:pb-24 bg-gradient-to-b from-[#F4FAFF] via-white to-white">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:items-center">
-            <div className="space-y-5">
-              <Skeleton className="h-6 w-44 rounded-full" />
-              <Skeleton className="h-12 w-full max-w-xl md:h-14" />
-              <Skeleton className="h-12 w-4/5 max-w-lg md:h-14" />
-              <SkeletonText lines={3} className="max-w-xl" />
+          {/* Centered Hero Header */}
+          <div className="mx-auto mb-14 max-w-4xl text-center space-y-5">
+            {/* Availability status badge */}
+            <Skeleton className="mx-auto h-7 w-64 rounded-full" />
 
-              <div className="flex flex-wrap gap-3 pt-2">
-                <SkeletonButton />
-                <SkeletonButton className="w-28" />
-              </div>
+            {/* Headline */}
+            <div className="space-y-3 pt-2">
+              <Skeleton className="mx-auto h-10 sm:h-12 md:h-14 w-11/12 max-w-3xl rounded-xl" />
+              <Skeleton className="mx-auto h-10 sm:h-12 md:h-14 w-3/4 max-w-2xl rounded-xl" />
             </div>
 
-            <SkeletonImage className="aspect-[4/3] w-full rounded-3xl" />
+            {/* Supporting paragraph */}
+            <div className="space-y-2 pt-2 max-w-2xl mx-auto">
+              <Skeleton className="mx-auto h-4 w-full rounded-md" />
+              <Skeleton className="mx-auto h-4 w-4/5 rounded-md" />
+            </div>
+
+            {/* Action buttons & Links */}
+            <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
+              <Skeleton className="h-12 w-44 rounded-lg" />
+              <Skeleton className="h-12 w-36 rounded-lg" />
+              <Skeleton className="h-12 w-32 rounded-lg" />
+            </div>
+
+            {/* Quick social icon links */}
+            <div className="flex items-center justify-center gap-3 pt-2">
+              {Array.from({ length: 4 }, (_, index) => (
+                <Skeleton key={index} className="h-9 w-9 rounded-full" />
+              ))}
+            </div>
+          </div>
+
+          {/* Right-side / Center interactive pipeline placeholder */}
+          <div className="mx-auto max-w-5xl rounded-2xl border border-white/10 bg-[#050A35] p-6 shadow-2xl md:p-8">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-white/10 pb-5">
+              <div className="flex items-center gap-2">
+                <SkeletonDark className="h-4 w-4 rounded-full" />
+                <SkeletonDark className="h-5 w-56 rounded-md" />
+              </div>
+              <SkeletonDark className="h-8 w-44 rounded-lg" />
+            </div>
+
+            {/* Pipeline nodes */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 py-6">
+              {Array.from({ length: 5 }, (_, index) => (
+                <div
+                  key={index}
+                  className="h-36 rounded-xl border border-white/10 bg-[#080E38]/80 p-4 flex flex-col justify-between"
+                >
+                  <div className="flex justify-between items-center">
+                    <SkeletonDark className="h-4 w-12 rounded" />
+                    <SkeletonDark className="h-4 w-14 rounded" />
+                  </div>
+                  <SkeletonDark className="h-5 w-4/5 rounded" />
+                  <SkeletonDark className="h-3.5 w-full rounded" />
+                </div>
+              ))}
+            </div>
+
+            {/* Bottom detail console */}
+            <div className="rounded-xl border border-white/10 bg-[#080E38] p-5">
+              <SkeletonDark className="mb-3 h-4 w-48 rounded" />
+              <div className="space-y-2">
+                <SkeletonDark className="h-3.5 w-full rounded" />
+                <SkeletonDark className="h-3.5 w-4/5 rounded" />
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Projects skeleton */}
+      {/* Projects section skeleton */}
       <section className="py-20 md:py-28">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <SectionHeaderSkeleton />
@@ -326,92 +376,11 @@ export const PageSkeleton: React.FC = () => {
         </div>
       </section>
 
-      {/* How I Build skeleton */}
-      <section className="border-t border-[#E5EDF7] bg-[#F4FAFF] py-20 md:py-28">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <SectionHeaderSkeleton />
-
-          <div className="mb-8 grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-7">
-            {Array.from({ length: 7 }, (_, index) => (
-              <Skeleton key={index} className="h-[74px] rounded-xl" />
-            ))}
-          </div>
-
-          <div className="rounded-2xl border border-[#E5EDF7] bg-white p-6 sm:p-8 md:p-10">
-            <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
-              <div className="lg:col-span-7">
-                <Skeleton className="mb-3 h-6 w-56 rounded-full" />
-                <Skeleton className="mb-2 h-8 w-3/4 max-w-xl" />
-                <Skeleton className="mb-4 h-4 w-44" />
-                <SkeletonText lines={4} className="mb-6" />
-
-                <div className="space-y-3">
-                  {Array.from({ length: 5 }, (_, index) => (
-                    <Skeleton key={index} className="h-4 w-full" />
-                  ))}
-                </div>
-              </div>
-
-              <div className="lg:col-span-5">
-                <div className="rounded-xl border border-[#E5EDF7] bg-[#F4FAFF] p-6">
-                  <Skeleton className="mb-4 h-4 w-56" />
-
-                  <div className="space-y-2">
-                    {Array.from({ length: 4 }, (_, index) => (
-                      <Skeleton
-                        key={index}
-                        className="h-10 w-full rounded-lg"
-                      />
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* AI Lab skeleton */}
       <section className="bg-[#050A35] py-20 md:py-28">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <SectionHeaderSkeleton darkMode />
           <SkeletonAILab />
-        </div>
-      </section>
-
-      {/* Case Studies skeleton */}
-      <section className="py-20 md:py-28">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <SectionHeaderSkeleton />
-          <SkeletonCaseStudy />
-        </div>
-      </section>
-
-      {/* Contact skeleton */}
-      <section className="py-20 md:py-28">
-        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-          <SectionHeaderSkeleton />
-
-          <div className="rounded-2xl border border-[#E5EDF7] bg-white p-6 md:p-10">
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-              <div className="space-y-2">
-                <Skeleton className="h-4 w-24" />
-                <Skeleton className="h-11 w-full rounded-lg" />
-              </div>
-
-              <div className="space-y-2">
-                <Skeleton className="h-4 w-24" />
-                <Skeleton className="h-11 w-full rounded-lg" />
-              </div>
-            </div>
-
-            <div className="mt-6 space-y-2">
-              <Skeleton className="h-4 w-24" />
-              <Skeleton className="h-32 w-full rounded-lg" />
-            </div>
-
-            <SkeletonButton className="mt-6" />
-          </div>
         </div>
       </section>
     </div>

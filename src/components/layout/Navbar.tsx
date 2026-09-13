@@ -11,8 +11,13 @@ export const Navbar: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 450);
+
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
 
@@ -22,7 +27,7 @@ export const Navbar: React.FC = () => {
        * It does not scroll the page.
        */
       const sections = navLinks.map((link) =>
-        link.href.replace("#", "").trim()
+        link.href.replace("#", "").trim(),
       );
 
       const scrollPosition = window.scrollY + 100;
@@ -40,6 +45,7 @@ export const Navbar: React.FC = () => {
     window.addEventListener("scroll", handleScroll, { passive: true });
 
     return () => {
+      clearTimeout(timer);
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
@@ -57,80 +63,114 @@ export const Navbar: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between">
           {/* Brand Logo */}
-          <Link
-            href="#home"
-            className="flex items-center group focus:outline-none focus:ring-2 focus:ring-[#1677FF] rounded-lg p-1"
-            aria-label={`${personalInfo.name} Home`}
-          >
-            <div className="h-11 sm:h-12 md:h-13 w-auto aspect-[1024/672] flex items-center justify-center transition-transform group-hover:scale-105">
-              <Logo className="h-full w-auto text-[#1677FF] transition-colors group-hover:text-[#0E5FD8]" />
-            </div>
-          </Link>
+          {isLoading ? (
+            <div className="h-10 sm:h-11 w-32 sm:w-36 rounded-lg bg-[#E7EFF8] animate-shimmer" />
+          ) : (
+            <Link
+              href="#home"
+              className="flex items-center group focus:outline-none focus:ring-2 focus:ring-[#1677FF] rounded-lg p-1"
+              aria-label={`${personalInfo.name} Home`}
+            >
+              <div className="h-11 sm:h-12 md:h-13 w-auto aspect-[1024/672] flex items-center justify-center transition-transform group-hover:scale-105">
+                <Logo className="h-full w-auto text-[#1677FF] transition-colors group-hover:text-[#0E5FD8]" />
+              </div>
+            </Link>
+          )}
 
           {/* Desktop Navigation */}
-          <nav className="hidden xl:flex items-center gap-1 bg-[#F4FAFF]/80 border border-[#E5EDF7] px-3 py-1.5 rounded-full backdrop-blur-sm">
-            {navLinks.map((link) => {
-              const sectionId = link.href.replace("#", "").trim();
-              const isActive = activeSection === sectionId;
+          <nav className="hidden xl:flex items-center gap-1 bg-[#F4FAFF]/80 border border-[#E5EDF7] px-3 py-1.5 rounded-full backdrop-blur-sm min-h-[38px]">
+            {isLoading ? (
+              <div className="flex items-center gap-2 px-1">
+                {[52, 60, 64, 54, 72, 56, 80, 56, 52].map((width, idx) => (
+                  <div
+                    key={idx}
+                    style={{ width: `${width}px` }}
+                    className="h-5 rounded-full bg-[#E7EFF8] animate-shimmer"
+                  />
+                ))}
+              </div>
+            ) : (
+              navLinks.map((link) => {
+                const sectionId = link.href.replace("#", "").trim();
+                const isActive = activeSection === sectionId;
 
-              return (
-                <Link
-                  key={sectionId}
-                  href={`#${sectionId}`}
-                  className={`px-3 py-1 rounded-full text-xs font-medium transition-all duration-200 ${
-                    isActive
-                      ? "bg-[#1677FF] text-white shadow-sm"
-                      : "text-[#5D6C87] hover:text-[#0A1235] hover:bg-white"
-                  }`}
-                >
-                  {link.label}
-                </Link>
-              );
-            })}
+                return (
+                  <Link
+                    key={sectionId}
+                    href={`#${sectionId}`}
+                    className={`px-3 py-1 rounded-full text-xs font-medium transition-all duration-200 ${
+                      isActive
+                        ? "bg-[#1677FF] text-white shadow-sm"
+                        : "text-[#5D6C87] hover:text-[#0A1235] hover:bg-white"
+                    }`}
+                  >
+                    {link.label}
+                  </Link>
+                );
+              })
+            )}
           </nav>
 
           {/* Right Action CTAs */}
           <div className="hidden sm:flex items-center gap-3">
-            <a
-              href="#resume"
-              className="inline-flex items-center gap-1.5 text-xs font-medium text-[#5D6C87] hover:text-[#1677FF] transition-colors px-3 py-2 rounded-md hover:bg-[#F4FAFF]"
-            >
-              <FileText className="w-3.5 h-3.5" />
-              <span>Resume</span>
-            </a>
+            {isLoading ? (
+              <div className="flex items-center gap-3">
+                <div className="h-7 w-20 rounded-md bg-[#E7EFF8] animate-shimmer" />
+                <div className="h-8 w-24 rounded-lg bg-[#E7EFF8] animate-shimmer" />
+              </div>
+            ) : (
+              <>
+                <a
+                  href="#resume"
+                  className="inline-flex items-center gap-1.5 text-xs font-medium text-[#5D6C87] hover:text-[#1677FF] transition-colors px-3 py-2 rounded-md hover:bg-[#F4FAFF]"
+                >
+                  <FileText className="w-3.5 h-3.5" />
+                  <span>Resume</span>
+                </a>
 
-            <a href="#contact">
-              <Button
-                variant="cta"
-                size="sm"
-                className="font-semibold shadow-sm"
-              >
-                Let&apos;s Talk
-                <ArrowUpRight className="w-3.5 h-3.5" />
-              </Button>
-            </a>
+                <a href="#contact">
+                  <Button
+                    variant="cta"
+                    size="sm"
+                    className="font-semibold shadow-sm"
+                  >
+                    Let&apos;s Talk
+                    <ArrowUpRight className="w-3.5 h-3.5" />
+                  </Button>
+                </a>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
           <div className="flex xl:hidden items-center gap-2">
-            <a href="#contact" className="sm:hidden">
-              <Button variant="cta" size="sm">
-                Contact
-              </Button>
-            </a>
+            {isLoading ? (
+              <div className="flex items-center gap-2">
+                <div className="h-8 w-18 rounded-lg bg-[#E7EFF8] animate-shimmer sm:hidden" />
+                <div className="h-9 w-9 rounded-lg bg-[#E7EFF8] animate-shimmer" />
+              </div>
+            ) : (
+              <>
+                <a href="#contact" className="sm:hidden">
+                  <Button variant="cta" size="sm">
+                    Contact
+                  </Button>
+                </a>
 
-            <button
-              type="button"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
-              className="p-2 rounded-lg text-[#0A1235] hover:bg-[#F4FAFF] border border-[#E5EDF7] transition-colors"
-            >
-              {mobileMenuOpen ? (
-                <X className="w-5 h-5" />
-              ) : (
-                <Menu className="w-5 h-5" />
-              )}
-            </button>
+                <button
+                  type="button"
+                  onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                  aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+                  className="p-2 rounded-lg text-[#0A1235] hover:bg-[#F4FAFF] border border-[#E5EDF7] transition-colors"
+                >
+                  {mobileMenuOpen ? (
+                    <X className="w-5 h-5" />
+                  ) : (
+                    <Menu className="w-5 h-5" />
+                  )}
+                </button>
+              </>
+            )}
           </div>
         </div>
       </div>

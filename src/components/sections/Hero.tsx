@@ -39,7 +39,7 @@ export const Hero: React.FC = () => {
           >
             <span className="w-2 h-2 rounded-full bg-[#1677FF] shrink-0 animate-pulse" />
             <span className="text-center leading-snug">
-              Available for Full-Stack &amp; AI Engineering Roles
+              Available for Full-Stack &amp; AI Roles
             </span>
           </motion.div>
 

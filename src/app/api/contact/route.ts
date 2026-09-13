@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+import nodemailer from "nodemailer";
 
 const contactSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters").max(100),
@@ -177,12 +178,62 @@ export async function POST(req: NextRequest) {
     });
 
     const destinationEmail =
-      process.env.CONTACT_EMAIL ||
       process.env.CONTACT_DESTINATION_EMAIL ||
+      process.env.CONTACT_EMAIL ||
       "mayankpadhi91@gmail.com";
 
-    // If an external email provider API key (such as Resend) is configured, dispatch here
-    if (process.env.RESEND_API_KEY) {
+    let emailSent = false;
+
+    // 1. If SMTP credentials are configured in environment variables, dispatch via Nodemailer
+    if (
+      process.env.SMTP_HOST &&
+      process.env.SMTP_USER &&
+      process.env.SMTP_PASS
+    ) {
+      try {
+        const port = process.env.SMTP_PORT
+          ? parseInt(process.env.SMTP_PORT, 10)
+          : 465;
+        const isSecure =
+          process.env.SMTP_SECURE === "true" ||
+          port === 465 ||
+          process.env.SMTP_SECURE === undefined;
+
+        const transporter = nodemailer.createTransport({
+          host: process.env.SMTP_HOST,
+          port: port,
+          secure: isSecure,
+          auth: {
+            user: process.env.SMTP_USER.trim(),
+            pass: process.env.SMTP_PASS.trim().replace(/\s+/g, ""),
+          },
+        });
+
+        const mailOptions = {
+          from:
+            process.env.SMTP_FROM ||
+            `"Mayank Padhi Portfolio" <${process.env.SMTP_USER}>`,
+          to: destinationEmail,
+          replyTo: email,
+          subject: `[Portfolio Inquiry] ${subject} - from ${name}`,
+          text: `You received a new message from ${name} (${email}, ${phone}):\n\nSubject: ${subject}\n\nMessage:\n${message || "No message provided."}\n\nSubmitted at: ${timestamp}`,
+          html: emailHtml,
+        };
+
+        await transporter.sendMail(mailOptions);
+        emailSent = true;
+        console.log("[SMTP Email Sent Successfully]:", {
+          to: destinationEmail,
+          subject,
+          sender: { name, email, phone },
+        });
+      } catch (smtpError) {
+        console.error("[SMTP Dispatch Error]:", smtpError);
+      }
+    }
+
+    // 2. Fallback to Resend if configured and SMTP was not used
+    if (!emailSent && process.env.RESEND_API_KEY) {
       try {
         await fetch("https://api.resend.com/emails", {
           method: "POST",
@@ -198,18 +249,18 @@ export async function POST(req: NextRequest) {
             html: emailHtml,
           }),
         });
+        emailSent = true;
       } catch (sendError) {
-        console.error("[Email Dispatch Error]:", sendError);
+        console.error("[Resend Dispatch Error]:", sendError);
       }
     }
 
-    console.log("[Portfolio Contact Received]:", {
+    console.log("[Portfolio Contact Processed]:", {
       timestamp,
       recipient: destinationEmail,
       sender: { name, email, phone },
       subject,
-      messageLength: message?.length || 0,
-      htmlPreviewLength: emailHtml.length,
+      emailSent,
     });
 
     return NextResponse.json(

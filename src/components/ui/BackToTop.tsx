@@ -13,7 +13,7 @@ export const BackToTop: React.FC = () => {
   const rafRef = useRef<number | null>(null);
 
   useEffect(() => {
-    const RADIUS = 25;
+    const RADIUS = 21;
     const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
     const circle = progressCircleRef.current;
@@ -32,7 +32,7 @@ export const BackToTop: React.FC = () => {
 
       const scrollableHeight = Math.max(
         document.documentElement.scrollHeight - viewportHeight,
-        0
+        0,
       );
 
       const progress =
@@ -41,9 +41,7 @@ export const BackToTop: React.FC = () => {
           : Math.min(1, Math.max(0, scrollTop / scrollableHeight));
 
       if (circle) {
-        circle.style.strokeDashoffset = `${
-          CIRCUMFERENCE * (1 - progress)
-        }`;
+        circle.style.strokeDashoffset = `${CIRCUMFERENCE * (1 - progress)}`;
 
         circle.style.opacity = progress <= 0 ? "0" : "1";
       }
@@ -105,59 +103,55 @@ export const BackToTop: React.FC = () => {
           : "pointer-events-none translate-y-3 opacity-0"
       }`}
     >
-      <div className="relative h-12 w-12 sm:h-14 sm:w-14">
-        {/* Outer SVG progress ring */}
+      <div className="relative h-12 w-12 sm:h-14 sm:w-14 rounded-full shadow-[0_8px_25px_rgba(56,189,248,0.4)]">
+        {/* SVG circular background with embedded progress ring */}
         <svg
           viewBox="0 0 56 56"
           aria-hidden="true"
           focusable="false"
-          className="absolute inset-0 h-full w-full -rotate-90"
+          className="absolute inset-0 h-full w-full -rotate-90 rounded-full"
         >
-          {/* Track circle */}
+          {/* Sky / light blue circular background */}
           <circle
             cx="28"
             cy="28"
-            r="25"
-            fill="none"
-            stroke="rgba(22, 119, 255, 0.20)"
-            strokeWidth="4"
+            r="26"
+            fill="#38BDF8"
+            className="transition-colors duration-200"
           />
 
-          {/* Active progress circle */}
+          {/* Semi-transparent backside static base ring */}
+          <circle
+            cx="28"
+            cy="28"
+            r="21"
+            fill="none"
+            stroke="rgba(255, 255, 255, 0.3)"
+            strokeWidth="3.5"
+          />
+
+          {/* Active progressive ring (Solid White) following scroll progress */}
           <circle
             ref={progressCircleRef}
             cx="28"
             cy="28"
-            r="25"
+            r="21"
             fill="none"
-            stroke="url(#back-to-top-progress-gradient)"
-            strokeWidth="4"
+            stroke="#FFFFFF"
+            strokeWidth="3.5"
             strokeLinecap="round"
           />
-
-          <defs>
-            <linearGradient
-              id="back-to-top-progress-gradient"
-              x1="0%"
-              y1="0%"
-              x2="100%"
-              y2="100%"
-            >
-              <stop offset="0%" stopColor="#1677FF" />
-              <stop offset="100%" stopColor="#00CFFF" />
-            </linearGradient>
-          </defs>
         </svg>
 
-        {/* Inner blue Back-to-Top button */}
+        {/* Center Back-to-Top trigger button */}
         <button
           type="button"
           onClick={scrollToTop}
           tabIndex={visible ? 0 : -1}
           aria-label="Back to top"
-          className="absolute left-1/2 top-1/2 z-10 flex h-9 w-9 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-[#1677FF] text-white shadow-[0_10px_25px_rgba(22,119,255,0.35)] transition-colors hover:bg-[#0E5FD8] focus:outline-none focus:ring-2 focus:ring-[#00CFFF] focus:ring-offset-2 sm:h-10 sm:w-10"
+          className="group absolute inset-0 z-10 flex h-full w-full items-center justify-center rounded-full text-white transition-transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2"
         >
-          <ArrowUp className="h-4 w-4 sm:h-5 sm:w-5" />
+          <ArrowUp className="h-5 w-5 stroke-[2.5] text-white drop-shadow transition-transform group-hover:-translate-y-0.5" />
         </button>
       </div>
     </div>

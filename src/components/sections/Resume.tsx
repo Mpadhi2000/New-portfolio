@@ -42,7 +42,7 @@ export const Resume: React.FC = () => {
               </div>
               <div>
                 <h4 className="font-bold text-sm text-[#0A1235]">
-                  Mayank_Padhi_Software_Engineer.pdf
+                  Mayank Padhi Resume
                 </h4>
                 <p className="text-xs text-[#5D6C87] font-mono">
                   Updated 2026 · Software Engineer · Full-Stack · GenAI

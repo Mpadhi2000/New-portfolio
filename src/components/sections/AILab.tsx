@@ -41,6 +41,30 @@ export const AILab: React.FC = () => {
   const selectedProject =
     aiLabProjects.find((p) => p.id === selectedAIId) || aiLabProjects[0];
 
+  const getBadgeStyles = (badge: string) => {
+    switch (badge.toLowerCase()) {
+      case "production":
+        return {
+          badgeClass:
+            "bg-emerald-500/15 text-emerald-300 border-emerald-500/40 shadow-[0_0_12px_rgba(16,185,129,0.15)]",
+          dotClass: "bg-emerald-400",
+        };
+      case "r&d prototype":
+        return {
+          badgeClass:
+            "bg-purple-500/15 text-purple-300 border-purple-500/40 shadow-[0_0_12px_rgba(168,85,247,0.15)]",
+          dotClass: "bg-purple-400",
+        };
+      case "architecture experiment":
+      default:
+        return {
+          badgeClass:
+            "bg-cyan-500/15 text-cyan-300 border-cyan-500/40 shadow-[0_0_12px_rgba(6,182,212,0.15)]",
+          dotClass: "bg-cyan-400",
+        };
+    }
+  };
+
   return (
     <section
       id="ai-lab"
@@ -71,6 +95,7 @@ export const AILab: React.FC = () => {
         >
           {aiLabProjects.map((item) => {
             const isSelected = selectedAIId === item.id;
+            const badgeStyle = getBadgeStyles(item.badge);
 
             return (
               <button
@@ -88,7 +113,12 @@ export const AILab: React.FC = () => {
                 }`}
               >
                 <div className="flex items-center justify-between mb-3">
-                  <span className="text-[10px] font-mono font-semibold px-2.5 py-0.5 rounded bg-[#1677ff] text-[#ffffff] border border-[#1677ff] shadow-sm">
+                  <span
+                    className={`inline-flex items-center gap-1.5 text-[10px] font-mono font-semibold px-2.5 py-1 rounded-md border tracking-wider uppercase ${badgeStyle.badgeClass}`}
+                  >
+                    <span
+                      className={`w-1.5 h-1.5 rounded-full shrink-0 ${badgeStyle.dotClass}`}
+                    />
                     {item.badge}
                   </span>
                 </div>
@@ -120,10 +150,17 @@ export const AILab: React.FC = () => {
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-6 border-b border-white/10">
               <div>
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="w-2 h-2 rounded-full bg-[#00CFFF] animate-pulse" />
-
-                  <span className="text-xs font-mono font-semibold px-2.5 py-0.5 rounded bg-[#1677ff] text-[#ffffff] border border-[#1677ff] shadow-sm">
-                    {selectedProject.badge.toUpperCase()} ARCHITECTURE
+                  <span
+                    className={`inline-flex items-center gap-1.5 text-xs font-mono font-semibold px-3 py-1 rounded-md border tracking-wider uppercase ${
+                      getBadgeStyles(selectedProject.badge).badgeClass
+                    }`}
+                  >
+                    <span
+                      className={`w-2 h-2 rounded-full shrink-0 animate-pulse ${
+                        getBadgeStyles(selectedProject.badge).dotClass
+                      }`}
+                    />
+                    {selectedProject.badge} ARCHITECTURE
                   </span>
                 </div>
 
