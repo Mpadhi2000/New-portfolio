@@ -82,6 +82,18 @@ export interface AchievementItem {
   verified: boolean;
 }
 
+export interface CertificationItem {
+  id: string;
+  issuer: string;
+  logo: string;
+  logoColor: string;
+  logoImage?: string;
+  title: string;
+  issued: string;
+  credentialUrl?: string;
+  certificateImage?: string;
+}
+
 export interface PersonalInfo {
   name: string;
   tagline: string;

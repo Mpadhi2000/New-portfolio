@@ -8,7 +8,7 @@ import { FadeInView } from "@/components/animations/FadeInView";
 import {
   Download,
   FileText,
-  Printer,
+  ExternalLink,
   CheckCircle,
   Briefcase,
   GraduationCap,
@@ -16,10 +16,6 @@ import {
 } from "lucide-react";
 
 export const Resume: React.FC = () => {
-  const handlePrint = () => {
-    window.print();
-  };
-
   return (
     <section
       id="resume"
@@ -44,32 +40,35 @@ export const Resume: React.FC = () => {
                 <h4 className="font-bold text-sm text-[#0A1235]">
                   Mayank Padhi Resume
                 </h4>
-                <p className="text-xs text-[#5D6C87] font-mono">
-                  Updated 2026 · Software Engineer · Full-Stack · GenAI
-                </p>
               </div>
             </div>
 
             <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handlePrint}
+              <a
+                href="/Mayank_Padhi_Resume.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="hidden sm:inline-flex"
               >
-                <Printer className="w-3.5 h-3.5" />
-                <span>Print / Save PDF</span>
-              </Button>
+                <Button variant="outline" size="sm" className="w-auto">
+                  <ExternalLink className="w-3.5 h-3.5" />
+                  <span>View PDF</span>
+                </Button>
+              </a>
 
-              <Button
-                variant="cta"
-                size="sm"
-                onClick={handlePrint}
-                className="font-semibold shadow-sm"
+              <a
+                href="/Mayank_Padhi_Resume.pdf"
+                download="Mayank_Padhi_Resume.pdf"
               >
-                <Download className="w-3.5 h-3.5" />
-                <span>Download Resume</span>
-              </Button>
+                <Button
+                  variant="cta"
+                  size="sm"
+                  className="font-semibold shadow-sm"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  <span>Download Resume</span>
+                </Button>
+              </a>
             </div>
           </div>
 

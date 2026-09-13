@@ -75,7 +75,7 @@ export const HowIBuild: React.FC = () => {
                 aria-selected={isActive}
                 aria-controls={`how-i-build-panel-${step.step}`}
                 onClick={() => handleStepSelect(idx)}
-                className={`p-2.5 sm:p-3 rounded-xl text-left transition-all duration-200 border cursor-pointer min-h-[68px] sm:min-h-[74px] flex flex-col justify-between ${
+                className={`p-2.5 sm:p-3 rounded-xl text-left transition-all duration-200 border cursor-pointer min-h-[68px] sm:min-h-[74px] flex flex-col justify-start gap-1.5 ${
                   isActive
                     ? "bg-[#1677FF] text-white border-[#1677FF] shadow-po-md font-semibold ring-1 ring-[#1677FF]"
                     : "bg-white text-[#0A1235] border-[#E5EDF7] hover:bg-[#F4FAFF] hover:border-[#1677FF]/40 shadow-sm"

@@ -104,7 +104,7 @@ export const Contact: React.FC = () => {
   return (
     <section
       id="contact"
-      className="py-20 md:py-28 bg-[#F4FAFF] relative overflow-hidden border-t border-[#E5EDF7]"
+      className="py-20 md:py-28 bg-[#F4FAFF] relative overflow-hidden border-y border-[#E5EDF7]"
     >
       <div className="absolute inset-0 bg-grid-pattern opacity-40 pointer-events-none" />
 
@@ -267,7 +267,7 @@ export const Contact: React.FC = () => {
                           name="name"
                           value={formData.name}
                           onChange={handleChange}
-                          placeholder="John Doe"
+                          placeholder="e.g. Alex Morgan"
                           className={`w-full px-3.5 py-2.5 rounded-lg border text-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#1677FF] ${
                             errors.name
                               ? "border-rose-300 bg-rose-50/50"
@@ -298,7 +298,7 @@ export const Contact: React.FC = () => {
                           name="email"
                           value={formData.email}
                           onChange={handleChange}
-                          placeholder="john@example.com"
+                          placeholder="e.g. alex@company.com"
                           className={`w-full px-3.5 py-2.5 rounded-lg border text-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#1677FF] ${
                             errors.email
                               ? "border-rose-300 bg-rose-50/50"
@@ -331,7 +331,7 @@ export const Contact: React.FC = () => {
                           name="phone"
                           value={formData.phone}
                           onChange={handleChange}
-                          placeholder="+1 555-0199"
+                          placeholder="e.g. +91 98765 43210"
                           className={`w-full px-3.5 py-2.5 rounded-lg border text-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#1677FF] ${
                             errors.phone
                               ? "border-rose-300 bg-rose-50/50"
@@ -362,7 +362,7 @@ export const Contact: React.FC = () => {
                           name="subject"
                           value={formData.subject}
                           onChange={handleChange}
-                          placeholder="Project Inquiry / Job Opportunity"
+                          placeholder="e.g. Full-Stack role or GenAI project"
                           className={`w-full px-3.5 py-2.5 rounded-lg border text-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#1677FF] ${
                             errors.subject
                               ? "border-rose-300 bg-rose-50/50"
@@ -391,7 +391,7 @@ export const Contact: React.FC = () => {
                         rows={4}
                         value={formData.message}
                         onChange={handleChange}
-                        placeholder="Tell me about your project, timeline, or engineering opportunity..."
+                        placeholder="Share the project scope, role, timeline, technical needs, or questions you have..."
                         className="w-full px-3.5 py-2.5 rounded-lg border border-[#E5EDF7] bg-[#F4FAFF] focus:bg-white text-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#1677FF] resize-y"
                       />
                     </div>

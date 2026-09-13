@@ -383,6 +383,25 @@ export const PageSkeleton: React.FC = () => {
           <SkeletonAILab />
         </div>
       </section>
+
+      {/* Layout footer skeleton */}
+      <footer className="bg-[#04082A] border-t border-white/10 py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 pb-10 border-b border-white/10">
+            <div className="md:col-span-6">
+              <div className="flex items-center gap-3 mb-4">
+                <SkeletonDark className="h-12 w-[72px] rounded-lg" />
+                <div className="space-y-2"><SkeletonDark className="h-5 w-36" /><SkeletonDark className="h-3 w-56" /></div>
+              </div>
+              <SkeletonDark className="h-4 w-full max-w-md mb-2" />
+              <SkeletonDark className="h-4 w-4/5 max-w-md mb-5" />
+              <div className="flex gap-2.5">{Array.from({ length: 3 }, (_, index) => <SkeletonDark key={index} className="h-9 w-9 rounded-lg" />)}</div>
+            </div>
+            <div className="md:col-span-6"><SkeletonDark className="h-4 w-24 mb-4" /><div className="grid grid-cols-2 sm:grid-cols-3 gap-3">{Array.from({ length: 11 }, (_, index) => <SkeletonDark key={index} className="h-4 w-20" />)}</div></div>
+          </div>
+          <SkeletonDark className="h-3 w-60 mx-auto mt-6" />
+        </div>
+      </footer>
     </div>
   );
 };

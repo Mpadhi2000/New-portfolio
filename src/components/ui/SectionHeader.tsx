@@ -46,13 +46,13 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({
 
       <h2
         className={cn(
-          "text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight leading-[1.25] sm:leading-[1.2] pb-1",
+          "text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight leading-[1.25] sm:leading-[1.2] pb-1 text-balance break-words",
           isDark ? "text-white" : "text-[#0A1235]",
         )}
       >
-        {title}{" "}
+        {title}{gradientTitle ? " " : ""}
         {gradientTitle && (
-          <span className="text-gradient-primary inline-block pb-1.5 pt-0.5">
+          <span className="text-gradient-primary inline break-words pb-1.5 pt-0.5">
             {gradientTitle}
           </span>
         )}

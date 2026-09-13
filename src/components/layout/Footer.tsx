@@ -15,7 +15,7 @@ export const Footer: React.FC = () => {
           {/* Brand Info */}
           <div className="md:col-span-6 flex flex-col items-start">
             <div className="flex items-center gap-2.5 mb-3">
-              <div className="h-7 w-auto aspect-[1024/672] flex items-center justify-center">
+              <div className="h-10 sm:h-12 w-auto aspect-[555/377] flex items-center justify-center">
                 <Logo className="h-full w-auto text-[#00CFFF]" />
               </div>
               <div>

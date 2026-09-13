@@ -11,6 +11,7 @@ import { AILab } from "@/components/sections/AILab";
 import { CaseStudies } from "@/components/sections/CaseStudies";
 import { Achievements } from "@/components/sections/Achievements";
 import { Resume } from "@/components/sections/Resume";
+import { Certifications } from "@/components/sections/Certifications";
 import { Contact } from "@/components/sections/Contact";
 import { PageSkeleton } from "@/components/ui/Skeleton";
 import { motion, AnimatePresence } from "framer-motion";
@@ -55,6 +56,7 @@ export default function Home() {
           <CaseStudies />
           <Achievements />
           <Resume />
+          <Certifications />
           <Contact />
         </motion.div>
       )}

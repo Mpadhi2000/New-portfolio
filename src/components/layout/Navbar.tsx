@@ -71,7 +71,7 @@ export const Navbar: React.FC = () => {
               className="flex items-center group focus:outline-none focus:ring-2 focus:ring-[#1677FF] rounded-lg p-1"
               aria-label={`${personalInfo.name} Home`}
             >
-              <div className="h-11 sm:h-12 md:h-13 w-auto aspect-[1024/672] flex items-center justify-center transition-transform group-hover:scale-105">
+              <div className="h-11 sm:h-12 md:h-13 w-auto aspect-[555/377] flex items-center justify-center transition-transform group-hover:scale-105">
                 <Logo className="h-full w-auto text-[#1677FF] transition-colors group-hover:text-[#0E5FD8]" />
               </div>
             </Link>

@@ -103,7 +103,7 @@ export const BackToTop: React.FC = () => {
           : "pointer-events-none translate-y-3 opacity-0"
       }`}
     >
-      <div className="relative h-12 w-12 sm:h-14 sm:w-14 rounded-full shadow-[0_8px_25px_rgba(56,189,248,0.4)]">
+      <div className="relative h-12 w-12 sm:h-14 sm:w-14 rounded-full shadow-[0_8px_25px_rgba(22,119,255,0.4)]">
         {/* SVG circular background with embedded progress ring */}
         <svg
           viewBox="0 0 56 56"
@@ -116,7 +116,7 @@ export const BackToTop: React.FC = () => {
             cx="28"
             cy="28"
             r="26"
-            fill="#38BDF8"
+            fill="#1677FF"
             className="transition-colors duration-200"
           />
 
@@ -149,7 +149,7 @@ export const BackToTop: React.FC = () => {
           onClick={scrollToTop}
           tabIndex={visible ? 0 : -1}
           aria-label="Back to top"
-          className="group absolute inset-0 z-10 flex h-full w-full items-center justify-center rounded-full text-white transition-transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2"
+          className="group absolute inset-0 z-10 flex h-full w-full items-center justify-center rounded-full text-white transition-transform hover:scale-105 active:scale-95 focus:outline-none"
         >
           <ArrowUp className="h-5 w-5 stroke-[2.5] text-white drop-shadow transition-transform group-hover:-translate-y-0.5" />
         </button>

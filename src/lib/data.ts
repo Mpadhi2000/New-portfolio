@@ -7,6 +7,7 @@ import {
   AILabItem,
   CaseStudy,
   AchievementItem,
+  CertificationItem,
 } from "@/types/portfolio";
 
 export const personalInfo: PersonalInfo = {
@@ -39,6 +40,7 @@ export const navLinks = [
   { label: "AI Lab", href: "#ai-lab" },
   { label: "Case Studies", href: "#case-studies" },
   { label: "Resume", href: "#resume" },
+  { label: "Certifications", href: "#certifications" },
   { label: "Contact", href: "#contact" },
 ];
 
@@ -449,13 +451,76 @@ export const skillGroups: SkillGroup[] = [
   },
 ];
 
+export const certificationsData: CertificationItem[] = [
+  {
+    id: "anthropic-claude-101",
+    issuer: "Anthropic",
+    logo: "AI",
+    logoColor: "bg-[#D97757]",
+    logoImage: "/anthropic_logo.jpg",
+    title: "Claude 101",
+    issued: "Aug 2026",
+    credentialUrl: "https://verify.skilljar.com/c/n2tqz3vwsj6w",
+  },
+  {
+    id: "pesto-fellowship",
+    issuer: "Pesto Tech",
+    logo: "P",
+    logoColor: "bg-[#1677FF]",
+    logoImage: "/pesto_tech.jpg",
+    title: "PESTO Fellowship – Full Stack Development & Product Engineering",
+    issued: "Jun 2024",
+    certificateImage: "/PestoFellowshipCertificate.jpg",
+  },
+  {
+    id: "udemy-full-stack",
+    issuer: "Udemy",
+    logo: "U",
+    logoColor: "bg-[#A435F0]",
+    logoImage: "/udemy_logo.jpg",
+    title: "The Complete Full-Stack Web Development Bootcamp",
+    issued: "Oct 2025",
+    credentialUrl: "https://udemy.com/certificate/UC-7dd5ad90-be69-4766-a0bb-50ba4ad3d232/",
+  },
+  {
+    id: "openai-agents-workflows",
+    issuer: "OpenAI",
+    logo: "◎",
+    logoColor: "bg-[#10A37F]",
+    logoImage: "/openai_logo.jpg",
+    title: "Agents and Workflows",
+    issued: "Aug 2026",
+    credentialUrl: "https://academy.openai.com/public/certificate/dnji1wu2ci",
+  },
+  {
+    id: "openai-applied-ai-foundations",
+    issuer: "OpenAI",
+    logo: "◎",
+    logoColor: "bg-[#10A37F]",
+    logoImage: "/openai_logo.jpg",
+    title: "Applied AI Foundations",
+    issued: "Aug 2026",
+    credentialUrl: "https://academy.openai.com/public/certificate/xd3h0reesn",
+  },
+  {
+    id: "openai-ai-foundations",
+    issuer: "OpenAI",
+    logo: "◎",
+    logoColor: "bg-[#10A37F]",
+    logoImage: "/openai_logo.jpg",
+    title: "AI Foundations",
+    issued: "Aug 2026",
+    credentialUrl: "https://academy.openai.com/public/certificate/pi4hval1qf",
+  },
+];
+
 export const experienceData: ExperienceItem[] = [
   {
     id: "enfuse",
     role: "Software Engineer — Full-Stack & AI Systems",
-    company: "EnFuse",
+    company: "EnFuse Solutions",
     location: "Mumbai, India",
-    period: "2025 – Present",
+    period: "Mar 2026 – Present · 7 months",
     isCurrent: true,
     responsibilities: [
       "Architect and deliver full-stack SaaS solutions and autonomous AI workflows across Next.js, Python, Node.js, and PostgreSQL.",
@@ -481,7 +546,7 @@ export const experienceData: ExperienceItem[] = [
     role: "Senior Web Developer",
     company: "Savit Interactive",
     location: "Malad, Mumbai, India",
-    period: "Aug 2025 – Present",
+    period: "Aug 2025 – Mar 2026 · 8 months",
     isCurrent: false,
     responsibilities: [
       "Engineered backend logic and RESTful API endpoints for scalable web systems using modern JavaScript and server frameworks.",
@@ -503,7 +568,7 @@ export const experienceData: ExperienceItem[] = [
     role: "Sr. Web & Platform Developer",
     company: "Nexsales",
     location: "Wadala, Mumbai, India",
-    period: "Oct 2024 – July 2025",
+    period: "Oct 2024 – Jul 2025 · 10 months",
     responsibilities: [
       "Developed custom API endpoints and backend services supporting multifaceted corporate web platforms.",
       "Managed and optimized relational database schemas for sustained performance, indexing, and backup integrity.",
@@ -523,7 +588,7 @@ export const experienceData: ExperienceItem[] = [
     role: "Web Developer",
     company: "Codeworkss",
     location: "Dombivli, India",
-    period: "Jan 2021 – Sep 2024",
+    period: "Jan 2022 – Sep 2024 · 2 years 9 months",
     responsibilities: [
       "Created structured REST API endpoints secured with token authentication and role-based access control.",
       "Optimized legacy asset pipelines and database queries, achieving a verified 20%+ reduction in initial page load times.",
