@@ -5,7 +5,7 @@ import Link from "next/link";
 import { navLinks, personalInfo } from "@/lib/data";
 import Logo from "@/components/ui/Logo";
 import { Button } from "@/components/ui/Button";
-import { Menu, X, FileText, ArrowUpRight } from "lucide-react";
+import { Menu, X, FileText, ArrowUpRight, Phone } from "lucide-react";
 
 export const Navbar: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -51,6 +51,18 @@ export const Navbar: React.FC = () => {
   }, []);
 
   const closeMobileMenu = () => setMobileMenuOpen(false);
+
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") closeMobileMenu();
+    };
+
+    window.addEventListener("keydown", closeOnEscape);
+
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, [mobileMenuOpen]);
 
   return (
     <header
@@ -151,9 +163,18 @@ export const Navbar: React.FC = () => {
               </div>
             ) : (
               <>
-                <a href="#contact" className="sm:hidden">
-                  <Button variant="cta" size="sm">
-                    Contact
+                <a
+                  href="#contact"
+                  aria-label="Contact"
+                  className="sm:hidden"
+                >
+                  <Button
+                    variant="cta"
+                    size="sm"
+                    className="w-8 px-0"
+                    aria-hidden="true"
+                  >
+                    <Phone className="w-4 h-4" />
                   </Button>
                 </a>
 
@@ -161,6 +182,8 @@ export const Navbar: React.FC = () => {
                   type="button"
                   onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                   aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+                  aria-expanded={mobileMenuOpen}
+                  aria-controls="mobile-navigation"
                   className="p-2 rounded-lg text-[#0A1235] hover:bg-[#F4FAFF] border border-[#E5EDF7] transition-colors"
                 >
                   {mobileMenuOpen ? (
@@ -177,8 +200,11 @@ export const Navbar: React.FC = () => {
 
       {/* Mobile Drawer Navigation */}
       {mobileMenuOpen && (
-        <div className="xl:hidden bg-white/95 backdrop-blur-xl border-b border-[#E5EDF7] px-4 pt-3 pb-6 shadow-xl animate-in slide-in-from-top-4 duration-200">
-          <div className="flex flex-col gap-1 max-h-[75vh] overflow-y-auto">
+        <div
+          id="mobile-navigation"
+          className="xl:hidden absolute inset-x-0 top-full max-h-[calc(100dvh-5rem)] overflow-y-auto overscroll-contain bg-white/95 backdrop-blur-xl border-b border-[#E5EDF7] px-4 pt-3 pb-6 shadow-xl animate-in slide-in-from-top-4 duration-200"
+        >
+          <div className="flex flex-col gap-1">
             {navLinks.map((link) => {
               const sectionId = link.href.replace("#", "").trim();
               const isActive = activeSection === sectionId;
