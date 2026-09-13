@@ -186,43 +186,68 @@ export async function POST(req: NextRequest) {
 
     // 1. If SMTP credentials are configured in environment variables, dispatch via Nodemailer
     if (
-      process.env.SMTP_HOST &&
-      process.env.SMTP_USER &&
-      process.env.SMTP_PASS
+      (process.env.SMTP_USER && process.env.SMTP_PASS) ||
+      process.env.SMTP_HOST
     ) {
       try {
-        const port = process.env.SMTP_PORT
-          ? parseInt(process.env.SMTP_PORT, 10)
-          : 465;
-        const isSecure =
-          process.env.SMTP_SECURE === "true" ||
-          port === 465 ||
-          process.env.SMTP_SECURE === undefined;
+        const smtpUser = (process.env.SMTP_USER || "").trim();
+        const smtpPass = (process.env.SMTP_PASS || "")
+          .trim()
+          .replace(/\s+/g, "");
+        const isGmail =
+          process.env.SMTP_HOST?.includes("gmail") ||
+          smtpUser.includes("gmail.com") ||
+          !process.env.SMTP_HOST;
 
-        const transporter = nodemailer.createTransport({
-          host: process.env.SMTP_HOST,
-          port: port,
-          secure: isSecure,
-          auth: {
-            user: process.env.SMTP_USER.trim(),
-            pass: process.env.SMTP_PASS.trim().replace(/\s+/g, ""),
-          },
-        });
+        const transporter = isGmail
+          ? nodemailer.createTransport({
+              service: "gmail",
+              auth: {
+                user: smtpUser,
+                pass: smtpPass,
+              },
+              tls: {
+                rejectUnauthorized: false,
+              },
+            })
+          : nodemailer.createTransport({
+              host: process.env.SMTP_HOST || "smtp.gmail.com",
+              port: process.env.SMTP_PORT
+                ? parseInt(process.env.SMTP_PORT, 10)
+                : 465,
+              secure:
+                process.env.SMTP_SECURE === "true" ||
+                process.env.SMTP_PORT === "465" ||
+                process.env.SMTP_SECURE === undefined,
+              auth: {
+                user: smtpUser,
+                pass: smtpPass,
+              },
+              tls: {
+                rejectUnauthorized: false,
+              },
+            });
+
+        // Gmail requires the authenticated user email in the From address
+        const senderFrom =
+          process.env.SMTP_FROM &&
+          !process.env.SMTP_FROM.includes("inquiry.mayankpadhi@gmail.com")
+            ? process.env.SMTP_FROM
+            : `"Mayank Padhi Portfolio" <${smtpUser}>`;
 
         const mailOptions = {
-          from:
-            process.env.SMTP_FROM ||
-            `"Mayank Padhi Portfolio" <${process.env.SMTP_USER}>`,
+          from: senderFrom,
           to: destinationEmail,
-          replyTo: email,
+          replyTo: `"${name}" <${email}>`,
           subject: `[Portfolio Inquiry] ${subject} - from ${name}`,
-          text: `You received a new message from ${name} (${email}, ${phone}):\n\nSubject: ${subject}\n\nMessage:\n${message || "No message provided."}\n\nSubmitted at: ${timestamp}`,
+          text: `You received a new inquiry through your portfolio website:\n\nName: ${name}\nEmail: ${email}\nPhone: ${phone}\nSubject: ${subject}\n\nMessage:\n${message || "No message provided."}\n\nSubmitted at: ${timestamp}`,
           html: emailHtml,
         };
 
-        await transporter.sendMail(mailOptions);
+        const info = await transporter.sendMail(mailOptions);
         emailSent = true;
         console.log("[SMTP Email Sent Successfully]:", {
+          messageId: info.messageId,
           to: destinationEmail,
           subject,
           sender: { name, email, phone },
