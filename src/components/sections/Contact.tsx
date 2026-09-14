@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
+import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
 import { personalInfo } from "@/lib/data";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { Button } from "@/components/ui/Button";
@@ -27,9 +28,13 @@ export const Contact: React.FC = () => {
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [turnstileError, setTurnstileError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
+  const turnstileRef = useRef<TurnstileInstance>(null);
+  const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 
   const validate = () => {
     const errs: Record<string, string> = {};
@@ -68,14 +73,20 @@ export const Contact: React.FC = () => {
     e.preventDefault();
     if (!validate()) return;
 
+    if (!turnstileToken) {
+      setTurnstileError("Please complete the security verification before submitting.");
+      return;
+    }
+
     setIsSubmitting(true);
     setServerError(null);
+    setTurnstileError(null);
 
     try {
       const response = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ ...formData, turnstileToken }),
       });
 
       const data = await response.json();
@@ -89,13 +100,19 @@ export const Contact: React.FC = () => {
           subject: "",
           message: "",
         });
+        setTurnstileToken(null);
+        turnstileRef.current?.reset();
       } else {
         setServerError(
           data.message || "Something went wrong. Please try again.",
         );
+        setTurnstileToken(null);
+        turnstileRef.current?.reset();
       }
-    } catch (err) {
+    } catch {
       setServerError("Network error. Please try again or email directly.");
+      setTurnstileToken(null);
+      turnstileRef.current?.reset();
     } finally {
       setIsSubmitting(false);
     }
@@ -396,12 +413,54 @@ export const Contact: React.FC = () => {
                       />
                     </div>
 
+                    {/* Security Verification */}
+                    <div>
+                      {turnstileSiteKey ? (
+                        <>
+                          <Turnstile
+                            ref={turnstileRef}
+                            siteKey={turnstileSiteKey}
+                            options={{ theme: "light" }}
+                            onSuccess={(token) => {
+                              setTurnstileToken(token);
+                              setTurnstileError(null);
+                              setServerError(null);
+                            }}
+                            onExpire={() => {
+                              setTurnstileToken(null);
+                              setTurnstileError(
+                                "Security verification expired. Please verify again.",
+                              );
+                            }}
+                            onError={() => {
+                              setTurnstileToken(null);
+                              setTurnstileError(
+                                "Security verification could not be completed. Please try again.",
+                              );
+                            }}
+                          />
+                          {turnstileError && (
+                            <span className="text-[11px] text-rose-500 mt-1 block">
+                              {turnstileError}
+                            </span>
+                          )}
+                        </>
+                      ) : (
+                        <div className="p-3 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
+                          <AlertCircle className="w-4 h-4 shrink-0" />
+                          <span>
+                            Security verification is unavailable. Please try again later.
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
                     {/* Submit Button */}
                     <Button
                       type="submit"
                       variant="cta"
                       size="lg"
-                      disabled={isSubmitting}
+                      disabled={isSubmitting || !turnstileToken || !turnstileSiteKey}
                       className="w-full font-semibold shadow-md cursor-pointer"
                     >
                       {isSubmitting ? (

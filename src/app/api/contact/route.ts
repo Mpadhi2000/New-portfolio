@@ -149,9 +149,79 @@ function escapeHtml(str: string): string {
     .replace(/'/g, "&#039;");
 }
 
+type TurnstileVerificationResult = {
+  success: boolean;
+  "error-codes"?: string[];
+};
+
+async function verifyTurnstileToken(token: string, request: NextRequest) {
+  const secret = process.env.TURNSTILE_SECRET_KEY;
+  if (!secret) {
+    console.error("[Turnstile Configuration Error]: TURNSTILE_SECRET_KEY is not configured.");
+    return false;
+  }
+
+  const formData = new FormData();
+  formData.append("secret", secret);
+  formData.append("response", token);
+
+  const clientIp = request.headers.get("cf-connecting-ip")?.trim();
+  if (clientIp) {
+    formData.append("remoteip", clientIp);
+  }
+
+  try {
+    const response = await fetch(
+      "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+      { method: "POST", body: formData },
+    );
+    const result = (await response.json()) as TurnstileVerificationResult;
+
+    if (!response.ok || !result.success) {
+      console.warn("[Turnstile Verification Failed]:", result["error-codes"]);
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error("[Turnstile Verification Error]:", error);
+    return false;
+  }
+}
+
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
+    const body: unknown = await req.json();
+    const requestSchema = z
+      .object({ turnstileToken: z.string().min(1) })
+      .passthrough();
+    const requestResult = requestSchema.safeParse(body);
+
+    if (!requestResult.success) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Please complete the security verification before submitting.",
+        },
+        { status: 400 },
+      );
+    }
+
+    const isTurnstileValid = await verifyTurnstileToken(
+      requestResult.data.turnstileToken,
+      req,
+    );
+    if (!isTurnstileValid) {
+      return NextResponse.json(
+        {
+          success: false,
+          message:
+            "Security verification failed or expired. Please complete it again and resubmit.",
+        },
+        { status: 403 },
+      );
+    }
+
     const parseResult = contactSchema.safeParse(body);
 
     if (!parseResult.success) {
