@@ -34,7 +34,7 @@ export const Contact: React.FC = () => {
   const [isSuccess, setIsSuccess] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
   const turnstileRef = useRef<TurnstileInstance>(null);
-  const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+  const turnstileSiteKey = process.env.TURNSTILE_SITE_KEY;
 
   const validate = () => {
     const errs: Record<string, string> = {};
